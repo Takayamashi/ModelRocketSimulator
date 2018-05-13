@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy import signal, interpolate
+from scipy import interpolate
 import pandas as pd
 import quaternion
 from mpl_toolkits.mplot3d import Axes3D
@@ -88,7 +88,7 @@ def wind(h):
 
 
 # パラシュート
-Sp = np.pi * rp**2 / 4. - np.pi * rp**2 / 400
+Sp = np.pi * rp ** 2 / 4. - np.pi * rp ** 2 / 400
 cp = 0.5
 
 """ωに関する設定"""
@@ -126,7 +126,7 @@ def columnar():
 
 # エンジンの先端xy軸まわりの慣性モーメント（もう質点とみなしちゃう）[端からエンジン重心le/2.]
 def inertia_e(time):
-    return (m(time) - mb) * (lc+l0 - le/2.)**2
+    return (m(time) - mb) * (lc + l0 - le / 2.) ** 2
 
 
 # 最後平行軸の定理で全部ずらす(質量の合計はm(time))
@@ -136,9 +136,10 @@ def inertia_xy(time):
 
 # 円筒のz軸重心まわりの慣性モーメント
 def inertia_z(time):
-    return (r0**2 + ri**2) * m(time) / 8.
+    return (r0 ** 2 + ri ** 2) * m(time) / 8.
 
 
+# 慣性モーメントの時間微分を差分で
 def inertia_xy_dot(time):
     return (inertia_xy(time + dt) - inertia_xy(time)) / dt
 
@@ -147,6 +148,7 @@ def inertia_z_dot(time):
     return (inertia_z(time + dt) - inertia_z(time)) / dt
 
 
+# 圧力中心と重心の差(モーメント用)
 def length(time):
     return CP - rcg(time)
 
@@ -159,7 +161,7 @@ def I(time):
     return MI
 
 
-# 逆行列の設定
+# Iの逆行列の設定
 def Iinv(time):
     Mii = np.linalg.inv(I(time))
     return Mii
@@ -173,7 +175,7 @@ def I_dot(time):
     return Mid
 
 
-# 機体から見た抗力
+# 機体から見た抗力(ベクトルの向きは機体から見てるので-vb+wind)
 def Fd(vb, a, h):
     drag = (- vb + wind(h)) * np.array([kappa[a] * np.linalg.norm(-vb + wind(h))])
     return drag
@@ -199,20 +201,27 @@ def Idomega(time, a):
 
 
 # 角速度と「慣性モーメントと角速度の内積」の外積
-def omegacross(a, time):
+def omegacross(time, a):
     return np.cross(omega[a], Iomega(time, a))
+
+
+# θの二回微分=Frotの形にするために定義
+def Frot(time, qr, vb, a, h):
+    Frot_1 = np.dot(Iinv(time), M(time, vb, qr, a, h))
+    Frot_2 = - np.dot(Iinv(time), Idomega(time, a))
+    Frot_3 = - np.dot(Iinv(time), omegacross(time, a))
+    return Frot_1 + Frot_2 + Frot_3
 
 
 """並進運動に関する関数"""
 
 
-# 基軸座標系の推力を並進運動座標系に回す(抗力を回していない)
+# 基軸座標系の推力を並進運動座標系に回した上で合力/mを考える
 def Fs(time, qr, vb, a, h):
     W = np.array([0., 0., - m(time) * g])
     Ft = np.array([0., 0., ft(time)])
     Ftt = qua.rotation(Ft, qua.cquat(qr))
     Fa = Fd(vb, a, h)
-    # FD = qua.rotation(Fa, qua.cquat(qr))
     F = W + Ftt + Fa
     return F / m(time)
 
@@ -237,31 +246,19 @@ def runge_kutta(a, kg1, kg2, kg3, kg4):
 for i in range(N - 1):
     t[i + 1] = t[i] + dt
     """回転でωを求める"""
-    ko1 = np.dot(Iinv(t[i]), M(t[i], v[i], q, i, p[i, 2])) - np.dot(Iinv(t[i]), Idomega(t[i], i)) - np.dot(Iinv(t[i]),
-                                                                                                           omegacross(i,
-                                                                                                                      t[
-                                                                                                                          i]))
+    ko1 = Frot(t[i], q, v[i], i, p[i, 2])
     kv1 = Fs(t[i], q, v[i], i, p[i, 2])
     kz1 = v[i]
 
-    ko2 = np.dot(Iinv(t[i] + dt / 2.),
-                 M(t[i] + dt / 2., v[i] + kv1 * dt / 2., q, i, p[i, 2] + kz1[2] * dt / 2.)) - np.dot(
-        Iinv(t[i] + dt / 2.),Idomega(t[i] + dt / 2., i)) - np.dot(Iinv(t[i] + dt / 2.), omegacross(i, t[i] + dt / 2.))
+    ko2 = Frot(t[i] + dt / 2., q, v[i] + kv1 * dt / 2., i, p[i, 2] + kz1[2] * dt / 2.)
     kv2 = Fs(t[i] + dt / 2., q, v[i] + kv1 * dt / 2., i, p[i, 2] + kz1[2] * dt / 2.)
     kz2 = v[i] + kv1 * dt / 2.
 
-    ko3 = np.dot(Iinv(t[i] + dt / 2.),
-                 M(t[i] + dt / 2., v[i] + kv2 * dt / 2., q, i, p[i, 2] + kz2[2] * dt / 2.)) - np.dot(
-        Iinv(t[i] + dt / 2.),
-        Idomega(t[i] + dt / 2.,
-                i)) - np.dot(
-        Iinv(t[i] + dt / 2.), omegacross(i, t[i] + dt / 2.))
+    ko3 = Frot(t[i] + dt / 2., q, v[i] + kv2 * dt / 2., i, p[i, 2] + kz2[2] * dt / 2.)
     kv3 = Fs(t[i] + dt / 2., q, v[i] + kv2 * dt / 2., i, p[i, 2] + kz2[2] * dt / 2.)
     kz3 = v[i] + kv2 * dt / 2.
 
-    ko4 = np.dot(Iinv(t[i] + dt), M(t[i] + dt, v[i] + kv3 * dt, q, i, p[i, 2] + kz3[2] * dt / 2.)) - np.dot(
-        Iinv(t[i] + dt),
-        Idomega(t[i] + dt, i)) - np.dot(Iinv(t[i] + dt), omegacross(i, t[i] + dt))
+    ko4 = Frot(t[i] + dt, q, v[i] + kv3 * dt, i, p[i, 2] + kz3[2] * dt / 2.)
     kv4 = Fs(t[i] + dt, q, v[i] + kv3 * dt, i, p[i, 2] + kz3[2] * dt / 2.)
     kz4 = v[i] + kv3 * dt
 
@@ -296,7 +293,6 @@ for i in range(N - 1):
         count = i + 1
         break
 
-
 plt.title("motion")
 plt.xlabel("t[s]")
 plt.ylim(0, max(p[0:count, 2] * 1.05))
@@ -304,7 +300,6 @@ plt.ylabel("z[m]")
 plt.plot(t[0:count], p[0:count, 2])
 plt.grid()
 plt.show()
-
 
 fig = plt.figure()
 ax = Axes3D(fig)
