@@ -88,11 +88,7 @@ def wind(h):
 
 
 # パラシュート
-<<<<<<< HEAD
 Sp = np.pi * rp ** 2 / 4. - np.pi * rp ** 2 / 400
-=======
-Sp = np.pi * rp**2 / 4. - np.pi * rp**2 / 400
->>>>>>> 750624a40987c73563fe4c26962a9afd5471ccbf
 cp = 0.5
 
 """ωに関する設定"""
@@ -130,11 +126,8 @@ def columnar():
 
 # エンジンの先端xy軸まわりの慣性モーメント（もう質点とみなしちゃう）[端からエンジン重心le/2.]
 def inertia_e(time):
-<<<<<<< HEAD
     return (m(time) - mb) * (lc + l0 - le / 2.) ** 2
-=======
-    return (m(time) - mb) * (lc+l0 - le/2.)**2
->>>>>>> 750624a40987c73563fe4c26962a9afd5471ccbf
+
 
 
 # 最後平行軸の定理で全部ずらす(質量の合計はm(time))
@@ -144,16 +137,10 @@ def inertia_xy(time):
 
 # 円筒のz軸重心まわりの慣性モーメント
 def inertia_z(time):
-<<<<<<< HEAD
     return (r0 ** 2 + ri ** 2) * m(time) / 8.
 
 
 # 慣性モーメントの時間微分を差分で
-=======
-    return (r0**2 + ri**2) * m(time) / 8.
-
-
->>>>>>> 750624a40987c73563fe4c26962a9afd5471ccbf
 def inertia_xy_dot(time):
     return (inertia_xy(time + dt) - inertia_xy(time)) / dt
 
@@ -162,10 +149,7 @@ def inertia_z_dot(time):
     return (inertia_z(time + dt) - inertia_z(time)) / dt
 
 
-<<<<<<< HEAD
 # 圧力中心と重心の差(モーメント用)
-=======
->>>>>>> 750624a40987c73563fe4c26962a9afd5471ccbf
 def length(time):
     return CP - rcg(time)
 
@@ -178,11 +162,7 @@ def I(time):
     return MI
 
 
-<<<<<<< HEAD
-# Iの逆行列の設定
-=======
 # 逆行列の設定
->>>>>>> 750624a40987c73563fe4c26962a9afd5471ccbf
 def Iinv(time):
     Mii = np.linalg.inv(I(time))
     return Mii
@@ -196,11 +176,7 @@ def I_dot(time):
     return Mid
 
 
-<<<<<<< HEAD
 # 機体から見た抗力(ベクトルの向きは機体から見てるので-vb+wind)
-=======
-# 機体から見た抗力
->>>>>>> 750624a40987c73563fe4c26962a9afd5471ccbf
 def Fd(vb, a, h):
     drag = (- vb + wind(h)) * np.array([kappa[a] * np.linalg.norm(-vb + wind(h))])
     return drag
@@ -226,7 +202,6 @@ def Idomega(time, a):
 
 
 # 角速度と「慣性モーメントと角速度の内積」の外積
-<<<<<<< HEAD
 def omegacross(time, a):
     return np.cross(omega[a], Iomega(time, a))
 
@@ -243,7 +218,6 @@ def Frot(time, qr, vb, a, h):
 
 
 # 基軸座標系の推力を並進運動座標系に回した上で合力/mを考える
-=======
 def omegacross(a, time):
     return np.cross(omega[a], Iomega(time, a))
 
@@ -251,17 +225,12 @@ def omegacross(a, time):
 """並進運動に関する関数"""
 
 
-# 基軸座標系の推力を並進運動座標系に回す(抗力を回していない)
->>>>>>> 750624a40987c73563fe4c26962a9afd5471ccbf
+# 基軸座標系の推力を並進運動座標系に回す
 def Fs(time, qr, vb, a, h):
     W = np.array([0., 0., - m(time) * g])
     Ft = np.array([0., 0., ft(time)])
     Ftt = qua.rotation(Ft, qua.cquat(qr))
     Fa = Fd(vb, a, h)
-<<<<<<< HEAD
-=======
-    # FD = qua.rotation(Fa, qua.cquat(qr))
->>>>>>> 750624a40987c73563fe4c26962a9afd5471ccbf
     F = W + Ftt + Fa
     return F / m(time)
 
@@ -286,7 +255,6 @@ def runge_kutta(a, kg1, kg2, kg3, kg4):
 for i in range(N - 1):
     t[i + 1] = t[i] + dt
     """回転でωを求める"""
-<<<<<<< HEAD
     ko1 = Frot(t[i], q, v[i], i, p[i, 2])
     kv1 = Fs(t[i], q, v[i], i, p[i, 2])
     kz1 = v[i]
@@ -300,33 +268,6 @@ for i in range(N - 1):
     kz3 = v[i] + kv2 * dt / 2.
 
     ko4 = Frot(t[i] + dt, q, v[i] + kv3 * dt, i, p[i, 2] + kz3[2] * dt / 2.)
-=======
-    ko1 = np.dot(Iinv(t[i]), M(t[i], v[i], q, i, p[i, 2])) - np.dot(Iinv(t[i]), Idomega(t[i], i)) - np.dot(Iinv(t[i]),
-                                                                                                           omegacross(i,
-                                                                                                                      t[
-                                                                                                                          i]))
-    kv1 = Fs(t[i], q, v[i], i, p[i, 2])
-    kz1 = v[i]
-
-    ko2 = np.dot(Iinv(t[i] + dt / 2.),
-                 M(t[i] + dt / 2., v[i] + kv1 * dt / 2., q, i, p[i, 2] + kz1[2] * dt / 2.)) - np.dot(
-        Iinv(t[i] + dt / 2.),Idomega(t[i] + dt / 2., i)) - np.dot(Iinv(t[i] + dt / 2.), omegacross(i, t[i] + dt / 2.))
-    kv2 = Fs(t[i] + dt / 2., q, v[i] + kv1 * dt / 2., i, p[i, 2] + kz1[2] * dt / 2.)
-    kz2 = v[i] + kv1 * dt / 2.
-
-    ko3 = np.dot(Iinv(t[i] + dt / 2.),
-                 M(t[i] + dt / 2., v[i] + kv2 * dt / 2., q, i, p[i, 2] + kz2[2] * dt / 2.)) - np.dot(
-        Iinv(t[i] + dt / 2.),
-        Idomega(t[i] + dt / 2.,
-                i)) - np.dot(
-        Iinv(t[i] + dt / 2.), omegacross(i, t[i] + dt / 2.))
-    kv3 = Fs(t[i] + dt / 2., q, v[i] + kv2 * dt / 2., i, p[i, 2] + kz2[2] * dt / 2.)
-    kz3 = v[i] + kv2 * dt / 2.
-
-    ko4 = np.dot(Iinv(t[i] + dt), M(t[i] + dt, v[i] + kv3 * dt, q, i, p[i, 2] + kz3[2] * dt / 2.)) - np.dot(
-        Iinv(t[i] + dt),
-        Idomega(t[i] + dt, i)) - np.dot(Iinv(t[i] + dt), omegacross(i, t[i] + dt))
->>>>>>> 750624a40987c73563fe4c26962a9afd5471ccbf
     kv4 = Fs(t[i] + dt, q, v[i] + kv3 * dt, i, p[i, 2] + kz3[2] * dt / 2.)
     kz4 = v[i] + kv3 * dt
 
@@ -361,10 +302,6 @@ for i in range(N - 1):
         count = i + 1
         break
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 750624a40987c73563fe4c26962a9afd5471ccbf
 plt.title("motion")
 plt.xlabel("t[s]")
 plt.ylim(0, max(p[0:count, 2] * 1.05))
@@ -373,10 +310,6 @@ plt.plot(t[0:count], p[0:count, 2])
 plt.grid()
 plt.show()
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 750624a40987c73563fe4c26962a9afd5471ccbf
 fig = plt.figure()
 ax = Axes3D(fig)
 ax.plot3D(p[0:count, 0], p[0:count, 1], p[0:count, 2])
