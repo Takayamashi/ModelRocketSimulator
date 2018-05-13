@@ -217,14 +217,6 @@ def Frot(time, qr, vb, a, h):
 """並進運動に関する関数"""
 
 
-# 基軸座標系の推力を並進運動座標系に回した上で合力/mを考える
-def omegacross(a, time):
-    return np.cross(omega[a], Iomega(time, a))
-
-
-"""並進運動に関する関数"""
-
-
 # 基軸座標系の推力を並進運動座標系に回す
 def Fs(time, qr, vb, a, h):
     W = np.array([0., 0., - m(time) * g])
