@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="21cf82f2-6048-4aaf-b2b6-77b73f4d5ac6" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-    </list>
+    <list default="true" id="21cf82f2-6048-4aaf-b2b6-77b73f4d5ac6" name="Default" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -25,8 +23,8 @@
       <file leaf-file-name="MRS.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/MRS.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="158">
-              <caret line="271" column="35" lean-forward="true" selection-start-line="271" selection-start-column="35" selection-end-line="271" selection-end-column="35" />
+            <state relative-caret-position="60">
+              <caret line="269" column="14" selection-start-line="269" selection-start-column="14" selection-end-line="269" selection-end-column="14" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -203,6 +201,23 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/MRS.py">
       <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4065">
+          <caret line="271" column="35" lean-forward="true" selection-start-line="271" selection-start-column="35" selection-end-line="271" selection-end-column="35" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/spec.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="14" column="7" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/MRS.py">
+      <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4125">
           <caret line="275" column="51" lean-forward="true" selection-start-line="275" selection-start-column="51" selection-end-line="275" selection-end-column="51" />
           <folding>
@@ -292,8 +307,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/MRS.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="158">
-          <caret line="271" column="35" lean-forward="true" selection-start-line="271" selection-start-column="35" selection-end-line="271" selection-end-column="35" />
+        <state relative-caret-position="60">
+          <caret line="269" column="14" selection-start-line="269" selection-start-column="14" selection-end-line="269" selection-end-column="14" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>

@@ -288,6 +288,7 @@ for i in range(N - 1):
     else:
         # クォータニオンを求める
         q += qua.qua_dot(omega[i], q) * dt
+        # パラシュートを開く(抗力係数を)
         kappa[i + 1] = 1.293 * Sp * cp / 2.
 
     if p[i + 1, 2] < - 1.:
