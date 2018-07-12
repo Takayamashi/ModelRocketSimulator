@@ -58,8 +58,10 @@ rp = float(spec['VALUE'][13])
 tt = thrust[:, 0]
 # 機体代表面積
 S = np.pi * r0 * r0 / 4.
+launcclearv = []
+launcclearv.append(0)
 # ランチャーの長さ[m]
-lancher = 5.
+launcher = 5.
 
 fta = thrust[:, 1]
 fta = np.r_[fta, 0.]
@@ -285,10 +287,11 @@ for i in range(N - 1):
     if p[i + 1, 2] > p[i, 2]:
         cd[i + 1] = cd0 / abs(np.cos(alpha[i + 1]))
 
-        if p[i + 1, 2] < lancher:
+        if p[i + 1, 2] < launcher:
             q = q0
             # ランチャー上を移動
             kappa = 1.293 * S * cd[i + 1] / 2.
+            launcclearv.append(np.linalg.norm(v[i+1]))
 
         else:
             # クォータニオンを求める
@@ -305,8 +308,12 @@ for i in range(N - 1):
         count = i + 1
         break
 
+print(np.argmax(p[0:count, 2]))
+print(t[np.argmax(p[0:count, 2])])
 print(max(p[0:count, 2]))
+print(max(launcclearv))
 
+"""
 plt.title("motion")
 plt.xlabel("t[s]")
 plt.ylim(0, max(p[0:count, 2] * 1.05))
@@ -319,3 +326,4 @@ fig = plt.figure()
 ax = Axes3D(fig)
 ax.plot3D(p[0:count, 0], p[0:count, 1], p[0:count, 2])
 plt.show()
+"""
