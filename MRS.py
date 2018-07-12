@@ -56,8 +56,10 @@ rp = float(spec['VALUE'][13])
 
 # 燃焼時間
 tt = thrust[:, 0]
-# パラシュート直径
+# 機体代表面積
 S = np.pi * r0 * r0 / 4.
+# ランチャーの長さ[m]
+lancher = 5.
 
 fta = thrust[:, 1]
 fta = np.r_[fta, 0.]
@@ -90,13 +92,13 @@ anorm[0] = 0
 
 
 def wind(h):
-    wind_t = np.array([0., 0., 0.]) * pow((abs(h) / 10.), 1. / 7.)
+    wind_t = np.array([0., 0., 0.]) * pow((abs(h) / 10.), 1. / 4.5)
     return wind_t
 
 
 # パラシュート
 Sp = np.pi * rp ** 2 / 4. - np.pi * rp ** 2 / 400
-cp = 0.5
+cp = 0.8
 
 """ωに関する設定"""
 omega = np.empty([N, 3])
@@ -105,8 +107,8 @@ alpha = np.empty(N)
 alpha[0] = 0
 cd = np.empty(N)
 cd[0] = cd0
-kappa = np.empty(N)
-kappa[0] = 1.293 * S * cd[0] / 2.
+# kappa = np.empty(N)
+kappa = 1.293 * S * cd[0] / 2.
 
 """回転に関する関数"""
 
@@ -185,7 +187,7 @@ def I_dot(time):
 
 # 機体から見た抗力(ベクトルの向きは機体から見てるので-vb+wind)
 def Fd(vb, a, h):
-    drag = (- vb + wind(h)) * np.array([kappa[a] * np.linalg.norm(-vb + wind(h))])
+    drag = (- vb + wind(h)) * np.array([kappa * np.linalg.norm(-vb + wind(h))])
     return drag
 
 
@@ -193,7 +195,8 @@ def Fd(vb, a, h):
 def M(time, vb, qr, a, h):
     rv = np.array([0., 0., -length(time)])
     F = Fd(vb, a, h)
-    Fl = qua.rotation(F, qr)
+    #機軸座標系の抗力にする
+    Fl = qua.rotation_w_r(F, qr)
     Nmm = np.cross(rv, Fl)
     return Nmm
 
@@ -282,27 +285,27 @@ for i in range(N - 1):
     if p[i + 1, 2] > p[i, 2]:
         cd[i + 1] = cd0 / abs(np.cos(alpha[i + 1]))
 
-        if p[i + 1, 2] < 2.1:
+        if p[i + 1, 2] < lancher:
             q = q0
             # ランチャー上を移動
-            kappa[i + 1] = 1.293 * S * cd[i + 1] / 2.
+            kappa = 1.293 * S * cd[i + 1] / 2.
 
         else:
             # クォータニオンを求める
             q += qua.qua_dot(omega[i], q) * dt
-            kappa[i + 1] = 1.293 * S * cd[i + 1] / 2.
+            kappa = 1.293 * S * cd[i + 1] / 2.
 
     else:
         # クォータニオンを求める
         q += qua.qua_dot(omega[i], q) * dt
         # パラシュートを開く(抗力係数を)
-        kappa[i + 1] = 1.293 * Sp * cp / 2.
+        kappa = 1.293 * Sp * cp / 2.
 
     if p[i + 1, 2] < - 1.:
         count = i + 1
         break
 
-print(max(p[0:count, 2])
+print(max(p[0:count, 2]))
 
 plt.title("motion")
 plt.xlabel("t[s]")

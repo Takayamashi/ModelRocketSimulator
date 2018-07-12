@@ -31,6 +31,13 @@ class Quaternion:
         ra = self.qcross(coq, self.qcross(r, q))
         return np.array([ra[1], ra[2], ra[3]])
 
+    def rotation_w_r(self, r, q):
+        r = self.quaternion(r)
+        coq = self.cquat(q)
+        ra = self.qcross(q, self.qcross(r, coq))
+        return np.array([ra[1], ra[2], ra[3]])
+
+
     """クォータニオンの時間微分"""
 
     def qua_dot(self, omega, q):
