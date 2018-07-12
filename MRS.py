@@ -10,7 +10,7 @@ from mpl_toolkits.mplot3d import Axes3D
 # 機体のスペックシートを読み込む
 spec = pd.read_csv("spec.csv")
 # 機体の推力シートを読む
-thrust = np.loadtxt("G75.txt")
+thrust = np.loadtxt("I205.txt")
 qua = quaternion.Quaternion()
 
 T = 60.
@@ -68,9 +68,14 @@ t1 = np.array([tt[0], tt[tt.size - 1], T])
 m1 = np.array([m0, mb, mb])
 m = interpolate.interp1d(t1, m1)
 
+
+def q0_def(theta):
+    return np.array([np.cos(np.pi * theta / 180.), np.sqrt(2) * np.sin(np.pi * theta / 180.) / 2.,
+               - np.sqrt(2) * np.sin(np.pi * theta / 180.) / 2., 0.])
+
+
 """初期条件"""
-q0 = np.array([np.cos(np.pi * 10. / 180.), np.sqrt(2) * np.sin(np.pi * 10. / 180.) / 2.,
-               - np.sqrt(2) * np.sin(np.pi * 10. / 180.) / 2., 0.])
+q0 = q0_def(0.)
 q = q0
 p = np.empty([N, 3])
 p[0] = np.array([0., 0., 0.])
@@ -296,6 +301,8 @@ for i in range(N - 1):
     if p[i + 1, 2] < - 1.:
         count = i + 1
         break
+
+print(max(p[0:count, 2])
 
 plt.title("motion")
 plt.xlabel("t[s]")
