@@ -58,10 +58,12 @@ rp = float(spec['VALUE'][13])
 tt = thrust[:, 0]
 # 機体代表面積
 S = np.pi * r0 * r0 / 4.
-launcclearv = []
-launcclearv.append(0)
+
 # ランチャーの長さ[m]
 launcher = 5.
+launcclearv = []
+launcclearv.append(0)
+
 
 fta = thrust[:, 1]
 fta = np.r_[fta, 0.]
@@ -87,10 +89,10 @@ v = np.empty([N, 3])
 v[0] = np.array([0., 0., 0.])
 a = np.empty([N, 3])
 a[0] = np.array([0., 0., 0.])
-vnorm = np.empty(N)
-vnorm[0] = 0
-anorm = np.empty(N)
-anorm[0] = 0
+vnorm = []
+vnorm.append(0)
+anorm = []
+anorm.append(0)
 
 
 def wind(h):
@@ -280,9 +282,8 @@ for i in range(N - 1):
     p[i + 1] = runge_kutta(p[i], kz1, kz2, kz3, kz4)
     alpha[i + 1] = angle(v[i + 1], q)
     a[i] = kv1
-    vnorm[i] = np.linalg.norm(v[i])
-    anorm[i] = np.linalg.norm(a[i])
-    print(p[i])
+    vnorm.append(np.linalg.norm(v[i+1]))
+    anorm.append(np.linalg.norm(a[i+1]))
 
     if p[i + 1, 2] > p[i, 2]:
         cd[i + 1] = cd0 / abs(np.cos(alpha[i + 1]))
@@ -304,12 +305,14 @@ for i in range(N - 1):
         # パラシュートを開く(抗力係数を)
         kappa = 1.293 * Sp * cp / 2.
 
-    if p[i + 1, 2] < - 1.:
+    if p[i + 1, 2] < 0:
         count = i + 1
         break
 
 print(np.argmax(p[0:count, 2]))
 print(t[np.argmax(p[0:count, 2])])
+print(v[count, 2])
+print(max(vnorm))
 print(max(p[0:count, 2]))
 print(max(launcclearv))
 
