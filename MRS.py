@@ -75,9 +75,46 @@ m1 = np.array([m0, mb, mb])
 m = interpolate.interp1d(t1, m1)
 
 
-def q0_def(theta):
+def q0_0(theta):
+    return np.array([np.cos(np.pi * theta / 180.), - np.sin(np.pi * theta / 180.), 0., 0.])
+
+
+def q0_45(theta):
+    return np.array([np.cos(np.pi * theta / 180.), - np.sqrt(2) * np.sin(np.pi * theta / 180.) / 2.,
+               np.sqrt(2) * np.sin(np.pi * theta / 180.) / 2., 0.])
+
+
+def q0_90(theta):
+    return np.array([np.cos(np.pi * theta / 180.),
+               - np.sin(np.pi * theta / 180.), 0., 0.])
+
+def q0_135(theta):
+    return np.array([np.cos(np.pi * theta / 180.), - np.sqrt(2) * np.sin(np.pi * theta / 180.) / 2.,
+               - np.sqrt(2) * np.sin(np.pi * theta / 180.) / 2., 0.])
+
+
+def q0_180(theta):
+    return np.array([np.cos(np.pi * theta / 180.), 0.,
+               - np.sin(np.pi * theta / 180.), 0.])
+
+
+def q0_225(theta):
     return np.array([np.cos(np.pi * theta / 180.), np.sqrt(2) * np.sin(np.pi * theta / 180.) / 2.,
                - np.sqrt(2) * np.sin(np.pi * theta / 180.) / 2., 0.])
+
+
+def q0_270(theta):
+    return np.array([np.cos(np.pi * theta / 180.),
+               np.sin(np.pi * theta / 180.), 0.,  0.])
+
+
+def q0_315(theta):
+    return np.array([np.cos(np.pi * theta / 180.), np.sqrt(2) * np.sin(np.pi * theta / 180.) / 2.,
+               np.sqrt(2) * np.sin(np.pi * theta / 180.) / 2., 0.])
+
+
+
+
 
 
 """初期条件"""
