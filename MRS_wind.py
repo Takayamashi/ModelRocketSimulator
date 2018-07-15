@@ -118,7 +118,9 @@ def q0_360(theta):
 
 
 """初期条件"""
-qarray = [q0_0(2.), q0_45(2.), q0_90(2.), q0_135(2.), q0_180(2.), q0_225(2.), q0_270(2.), q0_315(2.)]
+theta0 = 2.
+qarray = [q0_0(theta0), q0_45(theta0), q0_90(theta0), q0_135(theta0), q0_180(theta0), q0_225(theta0),
+          q0_270(theta0), q0_315(theta0), q0_360(theta0)]
 
 p = np.empty([N, 3])
 p[0] = np.array([0., 0., 0.])
@@ -327,22 +329,10 @@ q = qarray[0]
 for k in range(6):
 
     for j in range(9):
-        q = qarray[0]
-
-        p[0] = np.array([0., 0., 0.])
-        v[0] = np.array([0., 0., 0.])
-        a[0] = np.array([0., 0., 0.])
+        q = q0_0(theta0)
         vnorm = []
-        vnorm.append(0)
         anorm = []
-        anorm.append(0)
-        omega[0] = np.array([0., 0., 0.])
-        alpha[0] = 0
-        cd[0] = cd0
-        # kappa = np.empty(N)
-        kappa = 1.293 * S * cd[0] / 2.
-        count = 0
-
+        print(q)
 
         for i in range(N - 1):
             t[i + 1] = t[i] + dt
@@ -367,16 +357,15 @@ for k in range(6):
             v[i + 1] = runge_kutta(v[i], kv1, kv2, kv3, kv4)
             p[i + 1] = runge_kutta(p[i], kz1, kz2, kz3, kz4)
             alpha[i + 1] = angle(v[i + 1], q)
-            a[i] = kv1
+            a[i + 1] = kv1
             vnorm.append(np.linalg.norm(v[i + 1]))
             anorm.append(np.linalg.norm(a[i + 1]))
-            print(p[i+1])
 
             if p[i + 1, 2] > p[i, 2]:
                 cd[i + 1] = cd0 / abs(np.cos(alpha[i + 1]))
 
                 if p[i + 1, 2] < launcher:
-                    q = qarray[0]
+                    q = q0_0(theta0)
                     # ランチャー上を移動
                     kappa = 1.293 * S * cd[i + 1] / 2.
                     launcclearv.append(np.linalg.norm(v[i + 1]))
@@ -392,9 +381,14 @@ for k in range(6):
                 # パラシュートを開く(抗力係数を)
                 kappa = 1.293 * Sp * cp / 2.
 
-            if p[i + 1, 2] < -2.:
+            if p[i + 1, 2] < -1.:
                 count = i + 1
+                print(count)
+
                 break
+
+        q = q0_0(theta0)
+        print(q)
 
         if k == 0:
             pfall_1[j] = p[count]
