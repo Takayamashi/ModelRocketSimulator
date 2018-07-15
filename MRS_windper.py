@@ -14,7 +14,7 @@ thrust = np.loadtxt("I205.txt")
 qua = quaternion.Quaternion()
 
 T = 60.
-N = 2000
+N = 1000
 dt = T / float(N)
 t = np.empty(N)
 t[0] = 0.
@@ -138,11 +138,25 @@ def windmodel(h):
     return pow((abs(h) / 10.), 1. / 4.5)
 
 
-def wind(h):
-    windv = 1.
+def wind(h, windv, n):
+    # 南＞北
     wind_0 = np.array([1., 0., 0.]) * windv * windmodel(h)
+    # 南東＞北西
+    wind_45 = np.array([1. / np.sqrt(2), 1. / np.sqrt(2), 0.]) * windv * windmodel(h)
+    # 東＞西
+    wind_90 = np.array([0., 1., 0.]) * windv * windmodel(h)
+    wind_135 = np.array([- 1. / np.sqrt(2), 1. / np.sqrt(2), 0.]) * windv * windmodel(h)
+    # 北＞南
+    wind_180 = np.array([-1., 0., 0.]) * windv * windmodel(h)
+    wind_225 = np.array([- 1. / np.sqrt(2), - 1. / np.sqrt(2), 0.]) * windv * windmodel(h)
+    wind_270 = np.array([0., - 1., 0.]) * windv * windmodel(h)
+    wind_315 = np.array([1. / np.sqrt(2), - 1. / np.sqrt(2), 0.]) * windv * windmodel(h)
+    wind_360 = np.array([1., 0., 0.]) * windv * windmodel(h)
 
-    return wind_0
+    windarray = [wind_0, wind_45, wind_90, wind_135, wind_180,
+                 wind_225, wind_270, wind_315, wind_360]
+
+    return windarray[n]
 
 
 # パラシュート
@@ -234,15 +248,15 @@ def I_dot(time):
 
 
 # 機体から見た抗力(ベクトルの向きは機体から見てるので-vb+wind)
-def Fd(vb, a, h):
-    drag = (- vb + wind(h)) * np.array([kappa * np.linalg.norm(-vb + wind(h))])
+def Fd(vb, a, h, windv, n):
+    drag = (- vb + wind(h, windv, n)) * np.array([kappa * np.linalg.norm(-vb + wind(h, windv, n))])
     return drag
 
 
 # 機体座標上の力のモーメント
-def M(time, vb, qr, a, h):
+def M(time, vb, qr, a, h, windv, n):
     rv = np.array([0., 0., -length(time)])
-    F = Fd(vb, a, h)
+    F = Fd(vb, a, h, windv, n)
     # 機軸座標系の抗力にする
     Fl = qua.rotation_w_r(F, qr)
     Nmm = np.cross(rv, Fl)
@@ -265,8 +279,8 @@ def omegacross(time, a):
 
 
 # θの二回微分=Frotの形にするために定義
-def Frot(time, qr, vb, a, h):
-    Frot_1 = np.dot(Iinv(time), M(time, vb, qr, a, h))
+def Frot(time, qr, vb, a, h, windv, n):
+    Frot_1 = np.dot(Iinv(time), M(time, vb, qr, a, h, windv, n))
     Frot_2 = - np.dot(Iinv(time), Idomega(time, a))
     Frot_3 = - np.dot(Iinv(time), omegacross(time, a))
     return Frot_1 + Frot_2 + Frot_3
@@ -276,11 +290,11 @@ def Frot(time, qr, vb, a, h):
 
 
 # 基軸座標系の推力を並進運動座標系に回す
-def Fs(time, qr, vb, a, h):
+def Fs(time, qr, vb, a, h, windv, n):
     W = np.array([0., 0., - m(time) * g])
     Ft = np.array([0., 0., ft(time)])
     Ftt = qua.rotation(Ft, qua.cquat(qr))
-    Fa = Fd(vb, a, h)
+    Fa = Fd(vb, a, h, windv, n)
     F = W + Ftt + Fa
     return F / m(time)
 
@@ -302,35 +316,47 @@ def runge_kutta(a, kg1, kg2, kg3, kg4):
     return a + k1 + k2 + k3 + k4
 
 
-pfall = np.empty([9, 3])
+pfall_1 = np.empty([9, 3])
+pfall_2 = np.empty([9, 3])
+pfall_3 = np.empty([9, 3])
+pfall_4 = np.empty([9, 3])
+pfall_5 = np.empty([9, 3])
+pfall_6 = np.empty([9, 3])
+
+windv = 1.
+q = qarray[0]
+
 
 for j in range(9):
-    q = qarray[j]
+    q = q0_0(theta0)
+    vnorm = []
+    anorm = []
+    print(q)
 
     for i in range(N - 1):
         t[i + 1] = t[i] + dt
         """回転でωを求める"""
-        ko1 = Frot(t[i], q, v[i], i, p[i, 2])
-        kv1 = Fs(t[i], q, v[i], i, p[i, 2])
+        ko1 = Frot(t[i], q, v[i], i, p[i, 2], windv, j)
+        kv1 = Fs(t[i], q, v[i], i, p[i, 2], windv, j)
         kz1 = v[i]
 
-        ko2 = Frot(t[i] + dt / 2., q, v[i] + kv1 * dt / 2., i, p[i, 2] + kz1[2] * dt / 2.)
-        kv2 = Fs(t[i] + dt / 2., q, v[i] + kv1 * dt / 2., i, p[i, 2] + kz1[2] * dt / 2.)
+        ko2 = Frot(t[i] + dt / 2., q, v[i] + kv1 * dt / 2., i, p[i, 2] + kz1[2] * dt / 2., windv, j)
+        kv2 = Fs(t[i] + dt / 2., q, v[i] + kv1 * dt / 2., i, p[i, 2] + kz1[2] * dt / 2., windv, j)
         kz2 = v[i] + kv1 * dt / 2.
 
-        ko3 = Frot(t[i] + dt / 2., q, v[i] + kv2 * dt / 2., i, p[i, 2] + kz2[2] * dt / 2.)
-        kv3 = Fs(t[i] + dt / 2., q, v[i] + kv2 * dt / 2., i, p[i, 2] + kz2[2] * dt / 2.)
+        ko3 = Frot(t[i] + dt / 2., q, v[i] + kv2 * dt / 2., i, p[i, 2] + kz2[2] * dt / 2., windv, j)
+        kv3 = Fs(t[i] + dt / 2., q, v[i] + kv2 * dt / 2., i, p[i, 2] + kz2[2] * dt / 2., windv, j)
         kz3 = v[i] + kv2 * dt / 2.
 
-        ko4 = Frot(t[i] + dt, q, v[i] + kv3 * dt, i, p[i, 2] + kz3[2] * dt / 2.)
-        kv4 = Fs(t[i] + dt, q, v[i] + kv3 * dt, i, p[i, 2] + kz3[2] * dt / 2.)
+        ko4 = Frot(t[i] + dt, q, v[i] + kv3 * dt, i, p[i, 2] + kz3[2] * dt / 2., windv, j)
+        kv4 = Fs(t[i] + dt, q, v[i] + kv3 * dt, i, p[i, 2] + kz3[2] * dt / 2., windv, j)
         kz4 = v[i] + kv3 * dt
 
         omega[i + 1] = runge_kutta(omega[i], ko1, ko2, ko3, ko4)
         v[i + 1] = runge_kutta(v[i], kv1, kv2, kv3, kv4)
         p[i + 1] = runge_kutta(p[i], kz1, kz2, kz3, kz4)
         alpha[i + 1] = angle(v[i + 1], q)
-        a[i] = kv1
+        a[i+1] = kv1
         vnorm.append(np.linalg.norm(v[i + 1]))
         anorm.append(np.linalg.norm(a[i + 1]))
 
@@ -338,7 +364,7 @@ for j in range(9):
             cd[i + 1] = cd0 / abs(np.cos(alpha[i + 1]))
 
             if p[i + 1, 2] < launcher:
-                q = qarray[j]
+                q = q0_0(theta0)
                 # ランチャー上を移動
                 kappa = 1.293 * S * cd[i + 1] / 2.
                 launcclearv.append(np.linalg.norm(v[i + 1]))
@@ -354,21 +380,38 @@ for j in range(9):
             # パラシュートを開く(抗力係数を)
             kappa = 1.293 * Sp * cp / 2.
 
-        if p[i + 1, 2] < 0:
+        if p[i + 1, 2] < -1.:
             count = i + 1
+            print(count)
+
             break
 
-    pfall[j] = p[count]
+    pfall_1[j] = p[count]
+    q = q0_0(theta0)
+    print(q)
 
-pfall2d = pfall[:, [0, 1]]
 
-print(np.argmax(p[0:count, 2]))
-print(t[np.argmax(p[0:count, 2])])
-print(v[count, 2])
-print(max(vnorm))
-print(max(p[0:count, 2]))
-print(max(launcclearv))
-print(pfall2d)
+
+pfall2d_1 = pfall_1[:, [0, 1]]
+pfall2d_2 = pfall_2[:, [0, 1]]
+pfall2d_3 = pfall_3[:, [0, 1]]
+pfall2d_4 = pfall_4[:, [0, 1]]
+pfall2d_5 = pfall_5[:, [0, 1]]
+pfall2d_6 = pfall_6[:, [0, 1]]
+
+plt.title("Fall Range")
+plt.xlabel("x[m]")
+plt.ylabel("y[m]")
+plt.plot(pfall2d_1[:, 0], pfall2d_1[:, 1])
+"""
+plt.plot(pfall2d_2[:, 0], pfall2d_2[:, 1])
+plt.plot(pfall2d_3[:, 0], pfall2d_3[:, 1])
+plt.plot(pfall2d_4[:, 0], pfall2d_4[:, 1])
+plt.plot(pfall2d_5[:, 0], pfall2d_5[:, 1])
+plt.plot(pfall2d_6[:, 0], pfall2d_6[:, 1])
+"""
+plt.grid()
+plt.show()
 
 """
 plt.title("motion")

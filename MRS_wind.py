@@ -14,7 +14,7 @@ thrust = np.loadtxt("I205.txt")
 qua = quaternion.Quaternion()
 
 T = 60.
-N = 2000
+N = 1000
 dt = T / float(N)
 t = np.empty(N)
 t[0] = 0.
@@ -327,6 +327,21 @@ q = qarray[0]
 for k in range(6):
 
     for j in range(9):
+        q = qarray[0]
+
+        p[0] = np.array([0., 0., 0.])
+        v[0] = np.array([0., 0., 0.])
+        a[0] = np.array([0., 0., 0.])
+        vnorm = []
+        vnorm.append(0)
+        anorm = []
+        anorm.append(0)
+        omega[0] = np.array([0., 0., 0.])
+        alpha[0] = 0
+        cd[0] = cd0
+        # kappa = np.empty(N)
+        kappa = 1.293 * S * cd[0] / 2.
+        count = 0
 
 
         for i in range(N - 1):
@@ -355,12 +370,13 @@ for k in range(6):
             a[i] = kv1
             vnorm.append(np.linalg.norm(v[i + 1]))
             anorm.append(np.linalg.norm(a[i + 1]))
+            print(p[i+1])
 
             if p[i + 1, 2] > p[i, 2]:
                 cd[i + 1] = cd0 / abs(np.cos(alpha[i + 1]))
 
                 if p[i + 1, 2] < launcher:
-                    q = qarray[j]
+                    q = qarray[0]
                     # ランチャー上を移動
                     kappa = 1.293 * S * cd[i + 1] / 2.
                     launcclearv.append(np.linalg.norm(v[i + 1]))
@@ -376,27 +392,28 @@ for k in range(6):
                 # パラシュートを開く(抗力係数を)
                 kappa = 1.293 * Sp * cp / 2.
 
-            if p[i + 1, 2] < 0:
+            if p[i + 1, 2] < -2.:
                 count = i + 1
                 break
 
-        if k==0:
+        if k == 0:
             pfall_1[j] = p[count]
 
-        elif k==1:
+        if k == 1:
             pfall_2[j] = p[count]
 
-        elif k==2:
+        if k == 2:
             pfall_3[j] = p[count]
 
-        elif k==3:
+        if k == 3:
             pfall_4[j] = p[count]
 
-        elif k==4:
+        if k == 4:
             pfall_5[j] = p[count]
 
-        elif k==5:
+        if k == 5:
             pfall_6[j] = p[count]
+
 
     windv += 1.
 
