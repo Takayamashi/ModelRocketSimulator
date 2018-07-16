@@ -57,7 +57,7 @@ rp = float(spec['VALUE'][13])
 # 燃焼時間
 tt = thrust[:, 0]
 # 機体代表面積
-S = np.pi * r0 * r0 / 4.
+S = np.array([r0*(l0+lc), r0*(l0+lc), np.pi * r0 * r0 / 4.])
 
 # ランチャーの長さ[m]
 launcher = 5.
@@ -160,8 +160,8 @@ def wind(h, windv, n):
 
 
 # パラシュート
-Sp = np.pi * rp ** 2 / 4. - np.pi * rp ** 2 / 400
-cp = 0.8
+Sp = np.array([r0*(l0+lc), r0*(l0+lc), np.pi * rp ** 2 / 4. - np.pi * rp ** 2 / 400])
+cp = 0.65
 
 """ωに関する設定"""
 omega = np.empty([N, 3])
@@ -249,7 +249,8 @@ def I_dot(time):
 
 # 機体から見た抗力(ベクトルの向きは機体から見てるので-vb+wind)
 def Fd(vb, a, h, windv, n):
-    drag = (- vb + wind(h, windv, n)) * np.array([kappa * np.linalg.norm(-vb + wind(h, windv, n))])
+    drag = (- vb + wind(h, windv, n)) * kappa * np.linalg.norm(-vb + wind(h, windv, n))
+
     return drag
 
 
