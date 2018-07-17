@@ -57,7 +57,7 @@ rp = float(spec['VALUE'][13])
 # 燃焼時間
 tt = thrust[:, 0]
 # 機体代表面積
-S = np.pi * r0 * r0 / 4.
+S = np.array([r0*(l0+lc), r0*(l0+lc), np.pi * r0 * r0 / 4.])
 
 # ランチャーの長さ[m]
 launcher = 5.
@@ -145,9 +145,9 @@ def wind(h):
     return wind_0
 
 
-# パラシュート
-Sp = np.pi * rp ** 2 / 4. - np.pi * rp ** 2 / 400
-cp = 0.8
+# パラシュート設定
+Sp = np.array([r0*(l0+lc), r0*(l0+lc), np.pi * rp ** 2 / 4. - np.pi * rp ** 2 / 400])
+cp = 0.65
 
 """ωに関する設定"""
 omega = np.empty([N, 3])
@@ -235,7 +235,7 @@ def I_dot(time):
 
 # 機体から見た抗力(ベクトルの向きは機体から見てるので-vb+wind)
 def Fd(vb, a, h):
-    drag = (- vb + wind(h)) * np.array([kappa * np.linalg.norm(-vb + wind(h))])
+    drag = (- vb + wind(h)) * kappa * np.linalg.norm(-vb + wind(h))
     return drag
 
 
@@ -303,62 +303,58 @@ def runge_kutta(a, kg1, kg2, kg3, kg4):
 
 
 pfall = np.empty([9, 3])
+q = q0_0(0.)
 
-for j in range(9):
-    q = qarray[j]
+for i in range(N - 1):
+    t[i + 1] = t[i] + dt
+    """回転でωを求める"""
+    ko1 = Frot(t[i], q, v[i], i, p[i, 2])
+    kv1 = Fs(t[i], q, v[i], i, p[i, 2])
+    kz1 = v[i]
 
-    for i in range(N - 1):
-        t[i + 1] = t[i] + dt
-        """回転でωを求める"""
-        ko1 = Frot(t[i], q, v[i], i, p[i, 2])
-        kv1 = Fs(t[i], q, v[i], i, p[i, 2])
-        kz1 = v[i]
+    ko2 = Frot(t[i] + dt / 2., q, v[i] + kv1 * dt / 2., i, p[i, 2] + kz1[2] * dt / 2.)
+    kv2 = Fs(t[i] + dt / 2., q, v[i] + kv1 * dt / 2., i, p[i, 2] + kz1[2] * dt / 2.)
+    kz2 = v[i] + kv1 * dt / 2.
 
-        ko2 = Frot(t[i] + dt / 2., q, v[i] + kv1 * dt / 2., i, p[i, 2] + kz1[2] * dt / 2.)
-        kv2 = Fs(t[i] + dt / 2., q, v[i] + kv1 * dt / 2., i, p[i, 2] + kz1[2] * dt / 2.)
-        kz2 = v[i] + kv1 * dt / 2.
+    ko3 = Frot(t[i] + dt / 2., q, v[i] + kv2 * dt / 2., i, p[i, 2] + kz2[2] * dt / 2.)
+    kv3 = Fs(t[i] + dt / 2., q, v[i] + kv2 * dt / 2., i, p[i, 2] + kz2[2] * dt / 2.)
+    kz3 = v[i] + kv2 * dt / 2.
 
-        ko3 = Frot(t[i] + dt / 2., q, v[i] + kv2 * dt / 2., i, p[i, 2] + kz2[2] * dt / 2.)
-        kv3 = Fs(t[i] + dt / 2., q, v[i] + kv2 * dt / 2., i, p[i, 2] + kz2[2] * dt / 2.)
-        kz3 = v[i] + kv2 * dt / 2.
+    ko4 = Frot(t[i] + dt, q, v[i] + kv3 * dt, i, p[i, 2] + kz3[2] * dt / 2.)
+    kv4 = Fs(t[i] + dt, q, v[i] + kv3 * dt, i, p[i, 2] + kz3[2] * dt / 2.)
+    kz4 = v[i] + kv3 * dt
 
-        ko4 = Frot(t[i] + dt, q, v[i] + kv3 * dt, i, p[i, 2] + kz3[2] * dt / 2.)
-        kv4 = Fs(t[i] + dt, q, v[i] + kv3 * dt, i, p[i, 2] + kz3[2] * dt / 2.)
-        kz4 = v[i] + kv3 * dt
+    omega[i + 1] = runge_kutta(omega[i], ko1, ko2, ko3, ko4)
+    v[i + 1] = runge_kutta(v[i], kv1, kv2, kv3, kv4)
+    p[i + 1] = runge_kutta(p[i], kz1, kz2, kz3, kz4)
+    alpha[i + 1] = angle(v[i + 1], q)
+    a[i] = kv1
+    vnorm.append(np.linalg.norm(v[i + 1]))
+    anorm.append(np.linalg.norm(a[i + 1]))
 
-        omega[i + 1] = runge_kutta(omega[i], ko1, ko2, ko3, ko4)
-        v[i + 1] = runge_kutta(v[i], kv1, kv2, kv3, kv4)
-        p[i + 1] = runge_kutta(p[i], kz1, kz2, kz3, kz4)
-        alpha[i + 1] = angle(v[i + 1], q)
-        a[i] = kv1
-        vnorm.append(np.linalg.norm(v[i + 1]))
-        anorm.append(np.linalg.norm(a[i + 1]))
+    if p[i + 1, 2] > p[i, 2]:
+        cd[i + 1] = cd0 / abs(np.cos(alpha[i + 1]))
 
-        if p[i + 1, 2] > p[i, 2]:
-            cd[i + 1] = cd0 / abs(np.cos(alpha[i + 1]))
-
-            if p[i + 1, 2] < launcher:
-                q = qarray[j]
-                # ランチャー上を移動
-                kappa = 1.293 * S * cd[i + 1] / 2.
-                launcclearv.append(np.linalg.norm(v[i + 1]))
-
-            else:
-                # クォータニオンを求める
-                q += qua.qua_dot(omega[i], q) * dt
-                kappa = 1.293 * S * cd[i + 1] / 2.
+        if p[i + 1, 2] < launcher:
+            q = qarray[j]
+            # ランチャー上を移動
+            kappa = 1.293 * S * cd[i + 1] / 2.
+            launcclearv.append(np.linalg.norm(v[i + 1]))
 
         else:
             # クォータニオンを求める
             q += qua.qua_dot(omega[i], q) * dt
-            # パラシュートを開く(抗力係数を)
-            kappa = 1.293 * Sp * cp / 2.
+            kappa = 1.293 * S * cd[i + 1] / 2.
 
-        if p[i + 1, 2] < 0:
-            count = i + 1
-            break
+    else:
+        # クォータニオンを求める
+        q += qua.qua_dot(omega[i], q) * dt
+        # パラシュートを開く(抗力係数を)
+        kappa = 1.293 * Sp * cp / 2.
 
-    pfall[j] = p[count]
+    if p[i + 1, 2] < 0:
+        count = i + 1
+        break
 
 pfall2d = pfall[:, [0, 1]]
 
