@@ -46,7 +46,9 @@ ri = float(spec['VALUE'][8])
 # ボディの外径[m]
 r0 = float(spec['VALUE'][9])
 # 空気抵抗係数
-cd0 = float(spec['VALUE'][10])
+cd = float(spec['VALUE'][10])
+cd0 = np.array([0.1, 0.1, cd])
+
 # 圧力中心位置[m]
 CP = float(spec['VALUE'][11])
 # 重力加速度[m/s^2]
@@ -147,15 +149,15 @@ def wind(h):
 
 # パラシュート設定
 Sp = np.array([r0*(l0+lc), r0*(l0+lc), np.pi * rp ** 2 / 4. - np.pi * rp ** 2 / 400])
-cp = 0.65
+cp = np.array([cd, cd, 0.65])
+print(S, Sp)
 
 """ωに関する設定"""
 omega = np.empty([N, 3])
 omega[0] = np.array([0., 0., 0.])
 alpha = np.empty(N)
 alpha[0] = 0
-cd = np.empty(N)
-cd[0] = cd0
+cd = cd0
 # kappa = np.empty(N)
 kappa = 1.293 * S * cd[0] / 2.
 
@@ -308,6 +310,7 @@ q = q0_0(0.)
 for i in range(N - 1):
     t[i + 1] = t[i] + dt
     """回転でωを求める"""
+    print(Fd(v[i], i, p[i, 2]))
     ko1 = Frot(t[i], q, v[i], i, p[i, 2])
     kv1 = Fs(t[i], q, v[i], i, p[i, 2])
     kz1 = v[i]
@@ -333,18 +336,18 @@ for i in range(N - 1):
     anorm.append(np.linalg.norm(a[i + 1]))
 
     if p[i + 1, 2] > p[i, 2]:
-        cd[i + 1] = cd0 / abs(np.cos(alpha[i + 1]))
+        cd = cd0 / abs(np.cos(alpha[i + 1]))
 
         if p[i + 1, 2] < launcher:
-            q = qarray[j]
+            q = q0_0(0.)
             # ランチャー上を移動
-            kappa = 1.293 * S * cd[i + 1] / 2.
+            kappa = 1.293 * S * cd / 2.
             launcclearv.append(np.linalg.norm(v[i + 1]))
 
         else:
             # クォータニオンを求める
             q += qua.qua_dot(omega[i], q) * dt
-            kappa = 1.293 * S * cd[i + 1] / 2.
+            kappa = 1.293 * S * cd / 2.
 
     else:
         # クォータニオンを求める
@@ -358,6 +361,7 @@ for i in range(N - 1):
 
 pfall2d = pfall[:, [0, 1]]
 
+print(t[count])
 print(np.argmax(p[0:count, 2]))
 print(t[np.argmax(p[0:count, 2])])
 print(v[count, 2])
@@ -365,13 +369,11 @@ print(max(vnorm))
 print(max(p[0:count, 2]))
 print(max(launcclearv))
 print(pfall2d)
-
-"""
 plt.title("motion")
 plt.xlabel("t[s]")
 plt.ylim(0, max(p[0:count, 2] * 1.05))
 plt.ylabel("z[m]")
-plt.plot(t[0:count], p[0:count, 2])
+plt.plot(p[0:count, 0], p[0:count, 2])
 plt.grid()
 plt.show()
 
@@ -379,4 +381,3 @@ fig = plt.figure()
 ax = Axes3D(fig)
 ax.plot3D(p[0:count, 0], p[0:count, 1], p[0:count, 2])
 plt.show()
-"""

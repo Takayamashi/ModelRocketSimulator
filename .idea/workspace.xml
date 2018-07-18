@@ -4,6 +4,9 @@
     <list default="true" id="21cf82f2-6048-4aaf-b2b6-77b73f4d5ac6" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/MRS.py" beforeDir="false" afterPath="$PROJECT_DIR$/MRS.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MRS_wind.py" beforeDir="false" afterPath="$PROJECT_DIR$/MRS_wind.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/MRS_windper.py" beforeDir="false" afterPath="$PROJECT_DIR$/MRS_windper.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/spec.csv" beforeDir="false" afterPath="$PROJECT_DIR$/spec.csv" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -17,8 +20,8 @@
       <file leaf-file-name="MRS.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/MRS.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="434">
-              <caret line="59" column="60" selection-start-line="59" selection-start-column="60" selection-end-line="59" selection-end-column="60" />
+            <state relative-caret-position="2280">
+              <caret line="152" column="12" lean-forward="true" selection-start-line="152" selection-start-column="12" selection-end-line="152" selection-end-column="12" />
               <folding>
                 <element signature="e#25#43#0" expanded="true" />
               </folding>
@@ -26,11 +29,20 @@
           </provider>
         </entry>
       </file>
+      <file leaf-file-name="spec.csv" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/spec.csv">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="165">
+              <caret line="11" column="6" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="MRS_wind.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MRS_wind.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="430">
-              <caret line="59" selection-start-line="59" selection-end-line="59" selection-end-column="60" />
+            <state relative-caret-position="2520">
+              <caret line="168" column="24" lean-forward="true" selection-start-line="168" selection-start-column="24" selection-end-line="168" selection-end-column="24" />
               <folding>
                 <element signature="e#25#43#0" expanded="true" />
               </folding>
@@ -41,8 +53,8 @@
       <file leaf-file-name="MRS_windper.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/MRS_windper.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="795">
-              <caret line="58" column="8" selection-start-line="58" selection-start-column="8" selection-end-line="58" selection-end-column="8" />
+            <state relative-caret-position="1">
+              <caret line="353" column="25" lean-forward="true" selection-start-line="353" selection-start-column="25" selection-end-line="353" selection-end-column="25" />
               <folding>
                 <element signature="e#25#43#0" expanded="true" />
               </folding>
@@ -84,13 +96,13 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/spec.csv" />
         <option value="$PROJECT_DIR$/MRS_1.py" />
         <option value="$PROJECT_DIR$/quaternion.py" />
         <option value="$PROJECT_DIR$/DynamicsClass.py" />
-        <option value="$PROJECT_DIR$/MRS_windper.py" />
-        <option value="$PROJECT_DIR$/MRS_wind.py" />
+        <option value="$PROJECT_DIR$/spec.csv" />
         <option value="$PROJECT_DIR$/MRS.py" />
+        <option value="$PROJECT_DIR$/MRS_wind.py" />
+        <option value="$PROJECT_DIR$/MRS_windper.py" />
       </list>
     </option>
   </component>
@@ -152,7 +164,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.MRS_windper">
+  <component name="RunManager" selected="Python.MRS_wind">
     <configuration name="MRS" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="MRS" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -233,8 +245,8 @@
     </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.MRS_windper" />
         <item itemvalue="Python.MRS_wind" />
+        <item itemvalue="Python.MRS_windper" />
         <item itemvalue="Python.MRS" />
         <item itemvalue="Python.MRS_1" />
       </list>
@@ -260,7 +272,7 @@
       <window_info content_ui="combo" id="Project" order="0" weight="0.3296837" />
       <window_info anchor="bottom" id="TODO" order="6" />
       <window_info anchor="bottom" id="Event Log" order="7" side_tool="true" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32848486" />
+      <window_info active="true" anchor="bottom" id="Run" order="2" visible="true" weight="0.32848486" />
       <window_info anchor="bottom" id="Version Control" order="7" />
       <window_info anchor="bottom" id="Python Console" order="7" weight="0.32969698" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
@@ -611,13 +623,6 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/MRS_1.py" />
-    <entry file="file://$PROJECT_DIR$/spec.csv">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="225">
-          <caret line="15" selection-start-line="15" selection-end-line="15" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/DynamicsClass.py" />
     <entry file="file://$PROJECT_DIR$/quaternion.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -626,10 +631,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/spec.csv">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="11" column="6" selection-start-line="11" selection-start-column="6" selection-end-line="11" selection-end-column="6" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/MRS_windper.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="795">
-          <caret line="58" column="8" selection-start-line="58" selection-start-column="8" selection-end-line="58" selection-end-column="8" />
+        <state relative-caret-position="1">
+          <caret line="353" column="25" lean-forward="true" selection-start-line="353" selection-start-column="25" selection-end-line="353" selection-end-column="25" />
           <folding>
             <element signature="e#25#43#0" expanded="true" />
           </folding>
@@ -638,8 +650,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/MRS_wind.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="430">
-          <caret line="59" selection-start-line="59" selection-end-line="59" selection-end-column="60" />
+        <state relative-caret-position="2520">
+          <caret line="168" column="24" lean-forward="true" selection-start-line="168" selection-start-column="24" selection-end-line="168" selection-end-column="24" />
           <folding>
             <element signature="e#25#43#0" expanded="true" />
           </folding>
@@ -648,8 +660,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/MRS.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="434">
-          <caret line="59" column="60" selection-start-line="59" selection-start-column="60" selection-end-line="59" selection-end-column="60" />
+        <state relative-caret-position="2280">
+          <caret line="152" column="12" lean-forward="true" selection-start-line="152" selection-start-column="12" selection-end-line="152" selection-end-column="12" />
           <folding>
             <element signature="e#25#43#0" expanded="true" />
           </folding>
