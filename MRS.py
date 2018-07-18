@@ -47,7 +47,7 @@ ri = float(spec['VALUE'][8])
 r0 = float(spec['VALUE'][9])
 # 空気抵抗係数
 cd = float(spec['VALUE'][10])
-cd0 = np.array([0.1, 0.1, cd])
+cd0 = cd
 
 # 圧力中心位置[m]
 CP = float(spec['VALUE'][11])
@@ -149,7 +149,7 @@ def wind(h):
 
 # パラシュート設定
 Sp = np.array([r0*(l0+lc), r0*(l0+lc), np.pi * rp ** 2 / 4. - np.pi * rp ** 2 / 400])
-cp = np.array([cd, cd, 0.65])
+cp = 0.65
 print(S, Sp)
 
 """ωに関する設定"""
