@@ -1,0 +1,77 @@
+\documentclass{jsarticle}
+\usepackage[dvipdfmx]{graphicx}
+\usepackage{url}
+\usepackage{amsmath,amssymb}
+\usepackage{ascmac}
+\usepackage{graphicx}
+\usepackage{bm}
+\usepackage{amsmath}
+\usepackage{siunitx}
+\usepackage{listings}
+\usepackage{here}
+
+\title{飛行シミュレーション審査書添付資料}
+\author{RiSA -Ritsumeikan Space Association- \\　シミュレーション担当　高山竜一}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+
+\section{HybridRocektSimulator}
+ハイブリッドロケットのシミュレータを作成した．
+この時，ハイブリッドロケットの並進運動方程式は，推力$\bm{F_T}$，抗力$\bm{F_D}$，重力加速度$\bm{g}$として以下のように表せる．機体の位置$\bm{x}$，質量$m$としている．
+
+\begin{equation}
+m \bm{\ddot{x}} = \bm{F_T} + \bm{F_D} + m\bm{g}
+\end{equation}
+
+この時，抗力は抗力係数$C_D$，空気密度$\rho$，代表面積$S$を用いて表す．$\bm{v_{air}}$は
+対気速度である．$|\bm{v_{air}}| = v_{air}$
+
+また，風に関しては以下のべき法則風速モデルで考慮する．計算ではn=4.5，$Z_R=10$としている．
+
+\begin{equation}
+  \bm{w_z} = \bm{w_R} (\frac{Z}{Z_R})^{1/n}
+\end{equation}
+
+したがって，機体の速度$\bm{v}$として，抗力として働く対気速度$\bm{v_{air}} = - \bm{v} + \bm{w_z}$
+となり，以下のように抗力を表すことができる．
+
+\begin{equation}
+\bm{F_D} = \frac{1}{2} \rho S C_D v_{air} \bm{v_{air}}
+\end{equation}
+
+また，推力$\bm{F_T}$は機軸ベクトル$\bm{r}$を用いて，$\bm{F_T} = F_T \bm{r}$と表す．$|\bm{F_T}| = F_T$．
+
+
+また，剛体の座標軸から見たオイラーの運動方程式より，剛体座標系での回転の運動方程式が求まる．この時，ロケットの慣性モーメント$I$，角運動量$\bm{L}$，力のモーメント$\bm{N}$，角速度$\bm{\omega}$として以下のように書ける．この時の慣性モーメントは$3\times3$行列であり，対称コマ型なので$I_x = I_y$の行列である．
+
+\begin{equation}
+I \bm{\ddot{\omega}} = \bm{N} - \dot{I}\bm{\omega} - \bm{\omega} \times I \bm{\omega}
+\end{equation}
+
+上記のように，ロケットの運動は並進運動と回転運動に分けられる．しかし，回転運動を並進運動と同じ慣性座標で表現することは難しい．
+
+そのため，回転運動は機軸座標で表現し，そこから求めた$\omega = [\omega_x, \omega_y, \omega_z]$を元にクォータニオンを用いて機軸を更新する．
+
+クォータニオンは四元数という値であり，回転を表現するのに便利であるため採用した．クォータニオンは以後$\tilde{q}$というように$\tilde{}$をつけて表す．
+
+クォータニオンの微分方程式は$\tilde{\omega} = [0, \omega_x, \omega_y, \omega_z]$を用いて，以下のように表せる．
+
+\begin{equation}
+\dot{\tilde{q}} = -\frac{1}{2}\tilde{\omega}\tilde{q}
+\end{equation}
+
+そして，この$\tilde{q}$を用いて，慣性座標から見た基軸ベクトルを求めてやれば良い．機軸座標系の機軸ベクトル$\bm{r'} = [0,0,1]$を慣性座標系の機軸ベクトル$\bm{r}$に戻すには，$\tilde{q}$，これと共役なクォータニオン$\tilde{q}^*$を用いて以下のように表せる．
+
+\begin{equation}
+\bm{r} = \tilde{q} \bm{r'} \tilde{q}^*
+\end{equation}
+
+これで回転運動によって求めた機軸の向きを用いて並進運動が解けるようになった．後はルンゲクッタ法を用いて数値計算を行った．
+
+コード全文はGithub(https://github.com/Takayamashi/ModelRocketSimulator)のMRS.pyに示している．
+
+\end{document}

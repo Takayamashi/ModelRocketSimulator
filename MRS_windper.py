@@ -172,7 +172,7 @@ alpha = np.empty(N)
 alpha[0] = 0
 cd = cd0
 # kappa = np.empty(N)
-kappa = 1.293 * S * cd[0] / 2.
+kappa = 1.293 * S * cd / 2.
 
 """回転に関する関数"""
 
@@ -336,6 +336,7 @@ for j in range(9):
     print(q)
 
     for i in range(N - 1):
+        print(I(t[i]))
         t[i + 1] = t[i] + dt
         """回転でωを求める"""
         ko1 = Frot(t[i], q, v[i], i, p[i, 2], windv, j)
