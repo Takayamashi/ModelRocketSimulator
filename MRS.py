@@ -159,7 +159,7 @@ alpha = np.empty(N)
 alpha[0] = 0
 cd = cd0
 # kappa = np.empty(N)
-kappa = 1.293 * S * cd[0] / 2.
+kappa = 1.293 * S * cd / 2.
 
 """回転に関する関数"""
 
@@ -289,9 +289,10 @@ def Fs(time, qr, vb, a, h):
 
 # 迎角
 def angle(vb, qr):
-    vr = (0., 0., 1.)
-    vair = qua.rotation(vb, qr)
-    theta = np.arccos(np.dot(vair, vr) / (np.linalg.norm(vair) * np.linalg.norm(vr)))
+    Va = qua.rotation(vb, qr)
+    Vaz = Va[2]
+    Vax = Va[0]
+    theta = np.arctan2(Vaz, Vax) * 180 / np.pi
     return theta
 
 
@@ -336,7 +337,7 @@ for i in range(N - 1):
     anorm.append(np.linalg.norm(a[i + 1]))
 
     if p[i + 1, 2] > p[i, 2]:
-        cd = cd0 / abs(np.cos(alpha[i + 1]))
+        cd = cd0
 
         if p[i + 1, 2] < launcher:
             q = q0_0(0.)
