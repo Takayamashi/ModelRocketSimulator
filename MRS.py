@@ -46,8 +46,8 @@ ri = float(spec['VALUE'][8])
 # ボディの外径[m]
 r0 = float(spec['VALUE'][9])
 # 空気抵抗係数
-cd = float(spec['VALUE'][10])
-cd0 = cd
+cd_0 = float(spec['VALUE'][10])
+cd0 = np.array([cd_0, cd_0, cd_0])
 
 # 圧力中心位置[m]
 CP = float(spec['VALUE'][11])
@@ -149,8 +149,7 @@ def wind(h):
 
 # パラシュート設定
 Sp = np.array([r0*(l0+lc), r0*(l0+lc), np.pi * rp ** 2 / 4. - np.pi * rp ** 2 / 400])
-cp = 0.65
-print(S, Sp)
+cp = np.array([cd_0, cd_0, 0.65])
 
 """ωに関する設定"""
 omega = np.empty([N, 3])
@@ -292,7 +291,7 @@ def angle(vb, qr):
     Va = qua.rotation(vb, qr)
     Vaz = Va[2]
     Vax = Va[0]
-    theta = np.arctan2(Vaz, Vax) * 180 / np.pi
+    theta = np.arctan2(Vaz, Vax)
     return theta
 
 
@@ -311,7 +310,6 @@ q = q0_0(0.)
 for i in range(N - 1):
     t[i + 1] = t[i] + dt
     """回転でωを求める"""
-    print(Fd(v[i], i, p[i, 2]))
     ko1 = Frot(t[i], q, v[i], i, p[i, 2])
     kv1 = Fs(t[i], q, v[i], i, p[i, 2])
     kz1 = v[i]
@@ -331,29 +329,33 @@ for i in range(N - 1):
     omega[i + 1] = runge_kutta(omega[i], ko1, ko2, ko3, ko4)
     v[i + 1] = runge_kutta(v[i], kv1, kv2, kv3, kv4)
     p[i + 1] = runge_kutta(p[i], kz1, kz2, kz3, kz4)
-    alpha[i + 1] = angle(v[i + 1], q)
+    alpha[i + 1] = angle(v[i + 1], q) * 180. / np.pi
     a[i] = kv1
     vnorm.append(np.linalg.norm(v[i + 1]))
     anorm.append(np.linalg.norm(a[i + 1]))
+    print(omega[i+1])
 
     if p[i + 1, 2] > p[i, 2]:
-        cd = cd0
+        cd = np.array([cd_0 * angle(v[i+1], q), cd_0 * angle(v[i+1], q), cd_0])
 
         if p[i + 1, 2] < launcher:
             q = q0_0(0.)
             # ランチャー上を移動
             kappa = 1.293 * S * cd / 2.
+            # print(kappa)
             launcclearv.append(np.linalg.norm(v[i + 1]))
 
         else:
             # クォータニオンを求める
             q += qua.qua_dot(omega[i], q) * dt
             kappa = 1.293 * S * cd / 2.
+            # print(kappa)
 
     else:
         # クォータニオンを求める
         q += qua.qua_dot(omega[i], q) * dt
         # パラシュートを開く(抗力係数を)
+        cp = np.array([cd_0 * angle(v[i+1], q), cd_0 * angle(v[i+1], q), 0.65])
         kappa = 1.293 * Sp * cp / 2.
 
     if p[i + 1, 2] < 0:
