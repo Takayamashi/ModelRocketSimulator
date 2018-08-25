@@ -1,4 +1,4 @@
-This is e-pTeX, Version 3.14159265-p3.8.1-180226-2.6 (utf8.euc) (TeX Live 2018) (preloaded format=platex 2018.7.20)  21 JUL 2018 16:34
+This is e-pTeX, Version 3.14159265-p3.8.1-180226-2.6 (utf8.euc) (TeX Live 2018) (preloaded format=platex 2018.7.20)  25 AUG 2018 20:40
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -654,23 +654,94 @@ LaTeX Font Info:    Font shape `JY1/gt/m/n' will be
 LaTeX Font Info:    Font shape `JY1/gt/m/n' will be
 (Font)              scaled to size 5.76599pt on input line 19.
 LaTeX Font Info:    Font shape `JT1/mc/m/n' will be
-(Font)              scaled to size 13.83836pt on input line 22.
+(Font)              scaled to size 13.83836pt on input line 21.
 LaTeX Font Info:    Font shape `JY1/mc/m/n' will be
-(Font)              scaled to size 13.83836pt on input line 22.
+(Font)              scaled to size 13.83836pt on input line 21.
 LaTeX Font Info:    Font shape `JT1/gt/m/n' will be
-(Font)              scaled to size 13.83836pt on input line 22.
+(Font)              scaled to size 13.83836pt on input line 21.
 LaTeX Font Info:    Font shape `JY1/gt/m/n' will be
-(Font)              scaled to size 13.83836pt on input line 22.
- [1
+(Font)              scaled to size 13.83836pt on input line 21.
+LaTeX Font Info:    Font shape `JT1/gt/m/n' will be
+(Font)              scaled to size 11.53198pt on input line 24.
+LaTeX Font Info:    Font shape `JT1/gt/m/n' will be
+(Font)              scaled to size 9.60999pt on input line 29.
 
-] [2] (./simulation.aux) ) 
+./simulation.tex:47: Double subscript.
+l.47 $r_p_
+          {spill}$ &[m]&パラシュートスピルホール直径\\
+I treat `x_1_2' essentially like `x_1{}_2'.
+
+[1
+
+] [2]
+./simulation.tex:172: Double subscript.
+l.172 ...平行で垂直な2軸)周りの慣性モーメント$I_c_
+                                                  {xy} = $は，以下のように表...
+I treat `x_1_2' essentially like `x_1{}_2'.
+
+./simulation.tex:174: Double subscript.
+l.174   I_c_
+            {xy} = (3 m_{cone}r_{out}^2 / 4) / 20 + (3m_{cone}L_{cone}^2) / 5
+I treat `x_1_2' essentially like `x_1{}_2'.
+
+./simulation.tex:177: Double subscript.
+l.177 ...端から見た$xy$軸周りの慣性モーメント$I_b_
+                                                  {xy}$は，
+I treat `x_1_2' essentially like `x_1{}_2'.
+
+./simulation.tex:178: Double subscript.
+l.178 ...近似して，以下のようになる．ここで，$I_b_
+                                                  {xy}$は平行軸の定理より
+I treat `x_1_2' essentially like `x_1{}_2'.
+
+./simulation.tex:181: Double subscript.
+l.181   I_b_
+            {xy} = m_{tube}((r_{out}^2 + r_{in}^2)/ 4 + L_{tube}^2/ 3) / 4
+I treat `x_1_2' essentially like `x_1{}_2'.
+
+[3]
+./simulation.tex:204: Double subscript.
+l.204   I_{xy} = I_c_
+                     {xy} + I_b_{xy} + I_e + m(t)r_{CG}^2
+I treat `x_1_2' essentially like `x_1{}_2'.
+
+./simulation.tex:204: Double subscript.
+l.204   I_{xy} = I_c_{xy} + I_b_
+                                {xy} + I_e + m(t)r_{CG}^2
+I treat `x_1_2' essentially like `x_1{}_2'.
+
+./simulation.tex:228: Double subscript.
+\bm@command ->\mathchar 30790 _\mathchar 30788 _
+                                                \mathchar 30789 
+l.228 ...め，$\bm{N}$は機軸座標系の抗力$\bm{F_D_E}
+                                                   = (Y, -N, -D)$を用いて以...
+I treat `x_1_2' essentially like `x_1{}_2'.
+
+./simulation.tex:230: Double subscript.
+\bm@command ->\mathchar 30790 _\mathchar 30788 _
+                                                \mathchar 30789 
+l.230   \bm{N} = \bm{r_D} \times \bm{F_D_E}
+                                           
+I treat `x_1_2' essentially like `x_1{}_2'.
+
+./simulation.tex:239: Misplaced alignment tab character &.
+l.239   D(t) &
+              = \frac{1}{2} \rho S_p C_p v_{air}^2
+I can't figure out why you would want to use a tab mark
+here. If you just want an ampersand, the remedy is
+simple: Just type `I\&' now. But if some right brace
+up above has ended a previous alignment prematurely,
+you're probably due for more error messages, and you
+might try typing `S' now just to see what is salvageable.
+
+[4] [5] (./simulation.aux) ) 
 Here is how much of TeX's memory you used:
- 14714 strings out of 493273
- 284770 string characters out of 6144919
- 316629 words of memory out of 5000000
- 18569 multiletter control sequences out of 15000+600000
- 554414 words of font info for 122 fonts, out of 8000000 for 9000
+ 14719 strings out of 493273
+ 284800 string characters out of 6144919
+ 319644 words of memory out of 5000000
+ 18574 multiletter control sequences out of 15000+600000
+ 554792 words of font info for 124 fonts, out of 8000000 for 9000
  934 hyphenation exceptions out of 8191
- 32i,7n,36p,320b,382s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 32i,13n,36p,320b,382s stack positions out of 5000i,500n,10000p,200000b,80000s
 
-Output written on simulation.dvi (2 pages, 5520 bytes).
+Output written on simulation.dvi (5 pages, 17760 bytes).

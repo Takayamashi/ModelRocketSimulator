@@ -18,32 +18,82 @@
 
 \maketitle
 
+\section{定数定義}
+時間$t$の関数を$f(t)$のように記述する．
 
-\section{HybridRocektSimulator}
+\subsection{推力系}
+\begin{tabular}{lll}
+$ F_T(t)$ &[kg$\cdot$m/s$^2$] &推力(間のデータは線形補間を行なっている) \\
+\end{tabular}
+
+推力は*.txtファイルで管理する．主にデータは\url{http://www.thrustcurve.org/}より引用している．
+
+\subsection{構造系}
+\begin{tabular}{lll}
+$m_0$ &[kg]&燃焼前質量\\
+$m_b$ &[kg]&燃焼後質量\\
+$L_{CG}$ &[m]&重心位置(燃焼前ノーズ先端から重心までの距離)\\
+$L_{CP}$ &[m]&圧力中心位置(ノーズ先端から圧力中心位置までの距離)\\
+$L_{tube}$ &[m]&ボディチューブの長さ \\
+$L_{cone}$ &[m]&ノーズコーン長さ \\
+$L_{e}$ &[m]&エンジン長さ \\
+$m_{tune}$ &[kg]&ボディチューブ質量\\
+$m_{cone}$ &[kg]&ノーズコーン質量\\
+$r_{in}$ &[m]&ボディチューブ内径\\
+$r_{out}$ &[m]&ボディチューブ外径\\
+$C_D$ &&抗力係数\\
+$C_{N \alpha}$ &&法線力係数\\
+$r_p$ &[m]&パラシュート直径\\
+$r_p_{spill}$ &[m]&パラシュートスピルホール直径\\
+$C_p$ &&パラシュート抗力係数\\
+\end{tabular}
+
+以上がspec.csvで管理する変数一覧である．記述する順番はspec.csvの順番にならっている．
+
+以下は上記変数から導き出される定数である．
+
+\begin{tabular}{lll}
+$S$ &[m$^2$]&機体代表面積\\
+$S_p$ &[m$^2$]&パラシュート代表面積\\
+$I_{tube}$ &[kg$\cdot$m$^2$]&ボディチューブ慣性モーメント\\
+$I_{cone}$ &[kg$\cdot$m$^2$]&ノーズコーン慣性モーメント\\
+\end{tabular}
+
+\subsection{環境系}
+\begin{tabular}{lll}
+$L_{launcher}$ &[m]&ランチャー長さ\\
+$w_R$ &[m/s]&基準高さでの風速\\
+$Z_R$ &[m]&基準高さ\\
+$n$ &&べき風速モデルで風速を表現する際のべき乗値\\
+$\rho$ &[kg/m$^3$] & 空気密度 1.293[kg/m$^3$]で定数とする\\
+\end{tabular}
+
+以上はプログラム中で定義する．
+
+\section{変数定義}
+以下，\cite{bib1}での機体座標を機軸座標，地面座標を慣性座標と定義する．
+このとき，機軸座標を$(x_B, y_B, z_B)$として，慣性座標を$(x, y, z)$と定義するが，
+ロケットの機軸が慣性座標$z$軸と平行にあるとき$(x_B, y_B)$と$(x, y)$も平行であるように定義する．
+それに伴い\cite{bib1}の$D, Y, N$の定義について，$D$は$-z_B$，$Y$は$x_B$方向，$N$は$-y_B$
+方向となるように設定している．
+
+\begin{tabular}{ll}
+$\bm{v_{air}} = (V_{ax}(t), V_{ay}(t), V_{az}(t))$ &機軸座標系での対気速度\\
+$\bm{v}　= (V_{x}(t), V_{y}(t), V_{z}(t))$ &慣性座標系での機体速度\\
+$\bm{w_z} = (V_{wx},  V_{wy}, V_{wz})$ &慣性座標系での風速\\
+\end{tabular}
+
+
+\section{概要}
 ハイブリッドロケットのシミュレータを作成した．
-この時，ハイブリッドロケットの並進運動方程式は，推力$\bm{F_T}$，抗力$\bm{F_D}$，重力加速度$\bm{g}$として以下のように表せる．機体の位置$\bm{x}$，質量$m$としている．
+ハイブリッドロケットの並進運動方程式は，推力$\bm{F_T}$，抗力$\bm{F_D}$，
+重力加速度$\bm{g}$として以下のように表せる．機体の位置$\bm{x}$，質量$m$としている．
 
 \begin{equation}
 m \bm{\ddot{x}} = \bm{F_T} + \bm{F_D} + m\bm{g}
 \end{equation}
 
-この時，抗力は抗力係数$C_D$，空気密度$\rho$，代表面積$S$を用いて表す．$\bm{v_{air}}$は
-対気速度である．$|\bm{v_{air}}| = v_{air}$
-
-また，風に関しては以下のべき法則風速モデルで考慮する．計算ではn=4.5，$Z_R=10$としている．
-
-\begin{equation}
-  \bm{w_z} = \bm{w_R} (\frac{Z}{Z_R})^{1/n}
-\end{equation}
-
-したがって，機体の速度$\bm{v}$として，抗力として働く対気速度$\bm{v_{air}} = - \bm{v} + \bm{w_z}$
-となり，以下のように抗力を表すことができる．
-
-\begin{equation}
-\bm{F_D} = \frac{1}{2} \rho S C_D v_{air} \bm{v_{air}}
-\end{equation}
-
-また，推力$\bm{F_T}$は機軸ベクトル$\bm{r}$を用いて，$\bm{F_T} = F_T \bm{r}$と表す．$|\bm{F_T}| = F_T$．
+このとき，推力$\bm{F_T}$は機軸ベクトル$\bm{r}$を用いて，$\bm{F_T} = F_T \bm{r}$と表す．$|\bm{F_T}| = F_T$．
 
 
 また，剛体の座標軸から見たオイラーの運動方程式より，剛体座標系での回転の運動方程式が求まる．この時，ロケットの慣性モーメント$I$，角運動量$\bm{L}$，力のモーメント$\bm{N}$，角速度$\bm{\omega}$として以下のように書ける．この時の慣性モーメントは$3\times3$行列であり，対称コマ型なので$I_x = I_y$の行列である．
@@ -64,14 +114,146 @@ I \bm{\ddot{\omega}} = \bm{N} - \dot{I}\bm{\omega} - \bm{\omega} \times I \bm{\o
 \dot{\tilde{q}} = -\frac{1}{2}\tilde{\omega}\tilde{q}
 \end{equation}
 
-そして，この$\tilde{q}$を用いて，慣性座標から見た基軸ベクトルを求めてやれば良い．機軸座標系の機軸ベクトル$\bm{r'} = [0,0,1]$を慣性座標系の機軸ベクトル$\bm{r}$に戻すには，$\tilde{q}$，これと共役なクォータニオン$\tilde{q}^*$を用いて以下のように表せる．
+そして，この$\tilde{q}$を用いて，慣性座標から見た基軸ベクトルを求めてやれば良い．
+機軸座標系の機軸ベクトル$\bm{r'} = [0,0,1]$を慣性座標系の機軸ベクトル$\bm{r}$に戻すには，
+$\tilde{q}$，これと共役なクォータニオン$\tilde{q}^*$を用いて以下のように表せる．
 
 \begin{equation}
 \bm{r} = \tilde{q} \bm{r'} \tilde{q}^*
 \end{equation}
 
+逆に，慣性座標のベクトルを機軸座標からみたベクトルに戻すには
+$\tilde{q} \bm{r}\tilde{q}^*(\bm{r} は任意)$
+で変換可能．
+
 これで回転運動によって求めた機軸の向きを用いて並進運動が解けるようになった．後はルンゲクッタ法を用いて数値計算を行った．
 
+
+\section{空力設定}
+抗力$\bm{F_D}$について考える．
+
+この時，抗力は抗力係数$C_D$，法線力係数$C_{N\alpha}$空気密度$\rho$，代表面積$S$を用いて表す．
+$\bm{v_{air}}$は機軸座標上の対気速度である．
+$\bm{v_{air}} = (V_{ax}(t), V_{ay}(t), V_{az}(t))$，$|\bm{v_{air}}|^2$は各要素の二乗．
+
+また，風に関しては以下のべき法則風速モデルで考慮する．計算ではn=4.5，$Z_R=10$としている．
+
+\begin{equation}
+  \bm{w_z} = \bm{w_R} (\frac{Z}{Z_R})^{1/n}
+\end{equation}
+
+したがって，機軸座標上の速度$\bm{v}$として，
+抗力として働く対気速度$\bm{v_{air}} = \tilde{q}^*(- \bm{v} + \bm{w_z})\tilde{q}$
+となり，以下のように抗力$D$，横力$Y$，法線力$N$を表すことができる．
+
+\begin{eqnarray}
+  \begin{cases}
+    D(t) &= \frac{1}{2} \rho S C_D v_{air}^2 \\
+    Y(t) &= \frac{1}{2} \rho S C_{N\alpha} v_{air}^2 \beta \\
+    N(t) &= \frac{1}{2} \rho S C_{N\alpha} v_{air}^2 \alpha
+  \end{cases}
+\end{eqnarray}
+
+このとき，$\alpha$は迎角であり，$\beta$は横すべり角である．それぞれ定義は以下の通りである．
+\begin{eqnarray}
+  \alpha = \tan^{-1} \frac{V_{az}}{V_{ax}} \qquad
+  \beta = \sin^{-1} \frac{V_{ay}}{|\bm{v_{air}}|}
+\end{eqnarray}
+
+これを用いて，抗力$\bm{F_D}$は
+慣性座標系の$\bm{F_D} = \tilde{q}(Y, -N, -D)\tilde{q}^*$
+のように表される．
+
+\section{モーメント設定}
+力のモーメント$\bm{N}$と慣性モーメント$I$について考える．
+
+機体の慣性モーメント$I$について考える．
+このとき，ノーズコーンが円錐であると近似して，
+ノーズコーンの先端$xy$軸(円錐の円面に平行で垂直な2軸)周りの慣性モーメント$I_c_{xy} = $は，以下のように表せる
+\begin{equation}
+  I_c_{xy} = (3 m_{cone}r_{out}^2 / 4) / 20 + (3m_{cone}L_{cone}^2) / 5
+\end{equation}
+
+また，ボディの，ノーズコーン先端から見た$xy$軸周りの慣性モーメント$I_b_{xy}$は，
+ボディチューブを円筒であると近似して，以下のようになる．ここで，$I_b_{xy}$は平行軸の定理より
+ノーズコーン先端に移動させている．
+\begin{equation}
+  I_b_{xy} = m_{tube}((r_{out}^2 + r_{in}^2)/ 4 + L_{tube}^2/ 3) / 4
+  + m_{tube}((L_{tube} / 2 + L_{cone})^2 - (L_{tube} / 2)^2)
+\end{equation}
+
+そして，最後にエンジンの慣性モーメント$I_e$を考えるが，これはエンジンを
+重心がエンジン中心に存在する質点として捉える．こちらもノーズコーン先端まわり
+で考えている．
+そのため，$I_e = (m(t) - m_b)(L_{cone} + L_{tube} - L_e / 2)^2$
+
+ここで，$m(t)$は機体の時刻$t$での質量のことであるが，これは$t=0$で機体質量$m_0$，
+推力データより推力0となる時刻での機体質量$m_b$とした線形補間で表される関数である．
+エンジン燃焼後の質量は$m_b$で一定である．
+
+また，このとき，時刻$t$での重心位置$r_{CG}$は以下の通りである．
+このとき，エンジンの部分を抜いた
+機体自体の初期重心$r= (m_0 - m_b)(L_{CG} - L_e / 2) / m_0 + L_{CG}$
+\begin{equation}
+  r_{CG}(t)=(m(t)r+ (m(t) - m_b)(L_{tube} + L_{cone} - r)) / (2m(t) - m_b)
+\end{equation}
+
+よって，ノーズコーン先端から重心までの距離がわかるので重心$xy$軸周りの
+慣性モーメント$I_{xy}$がわかる．
+\begin{equation}
+  I_{xy} = I_c_{xy} + I_b_{xy} + I_e + m(t)r_{CG}^2
+\end{equation}
+
+また，円錐，円筒の中心を通る$z$軸周りの慣性モーメント$I_z$は以下の通りである．
+\begin{equation}
+  I_z = (r_{out}^2 + r_{in}^2)m(t) / 8
+\end{equation}
+
+そして慣性モーメント行列$I$はロケットの対称性より以下のようになる．
+\begin{equation}
+  I =
+  \begin{bmatrix}
+    I_{xy} & 0 & 0 \\
+    0 & I_{xy} & 0 \\
+    0 & 0 & I_{z}
+  \end{bmatrix}
+\end{equation}
+
+この$I$が求まったとこにより$I$の逆行列，$\dot{I}$が求まり，式(2)が解けるようになる．
+
+また，モーメント$\bm{N}$について考える．
+機軸座標上であれば，圧力中心位置は機軸に乗るので簡単にモーメントを計算できる．
+つまり，重心から圧力中心までの距離$r_{CP} = L_{CP} - r_{CG}(t)$となり，機軸座標を重心を
+原点としてとると，抗力が働く部分の位置ベクトル$\bm{r_D} = (0, 0, -r_{CP})$．
+そのため，$\bm{N}$は機軸座標系の抗力$\bm{F_D_E} = (Y, -N, -D)$を用いて以下のようになる．
+\begin{equation}
+  \bm{N} = \bm{r_D} \times \bm{F_D_E}
+\end{equation}
+
+
+\section{パラシュート開傘}
+パラシュートは最高点で開くように設定する．つまり，慣性座標で機体$z$軸方向の速度がマイナスになった
+点でパラシュートが開傘するようにする．また，パラシュートの表現として，抗力$D$に対して以下のように
+変化させる．
+\begin{equation}
+  D(t) &= \frac{1}{2} \rho S_p C_p v_{air}^2
+\end{equation}
+$N, Y$についてはパラシュート開傘前後で同じ式を用いる．
+
+
 コード全文はGithub(https://github.com/Takayamashi/ModelRocketSimulator)のMRS.pyに示している．
+
+\begin{thebibliography}{9}
+  \bibitem{bib1} スピンを伴うロケットの運動を計算するプログラム \\
+  \url{https://repository.exst.jaxa.jp/dspace/bitstream/a-is/25045/1/naltm00145.pdf}
+  \bibitem{bib2} クォータニオン計算便利ノート \\
+  \url{http://www.mss.co.jp/technology/report/pdf/18-07.pdf}
+  \bibitem{bib3} Matlabで計算するロケットフライトシミュレータ (稲川貴大) \\
+  \url{https://github.com/ina111/MatRockSim}
+  \bibitem{bib4} OpenRocket technical documentation \\
+  \url{http://openrocket.sourceforge.net/techdoc.pdf}
+  \bibitem{bib5} ModelRocketSimulator \\
+  \url{https://github.com/Jirouken/ModelRocketSimulator}
+\end{thebibliography}
 
 \end{document}
