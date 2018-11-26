@@ -1,15 +1,18 @@
 COLUMN,VALUE
-m0,4.806
-mb,4.5080
-CG,0.799
+m0,4.539
+mb,4.241
+CG,0.782
+CP,0.938
 length of BODYTUBE,1.02
 length of engine,0.52
-length og nose,0.20
-mc,0.03560
-mbody,5
-ri,0.10800
-r0,0.1140
-cd,0.4
-CP,0.936
+length og nose,0.2
+mbody,4.117
+mc,0.0356
+ri,0.108
+r0,0.114
+cd,0.56
+cn,23.1
+rp,1.2
+rp_spill,0.12
+cp,0.65
 g,9.80665
-rp,1.20

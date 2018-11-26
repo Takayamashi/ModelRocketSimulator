@@ -1,4 +1,15 @@
 import numpy as np
+"""
+クォータニオンをベクトルq = [q0, q1, q2, q3]で定義する．
+共役クォータニオンq* = [q0, -q1, -q2, -q3]
+クォータニオン積を行列表記すると，
+qp = [[q0, -q1, -q2, -q3], [p0,
+      [q1,  q0, -q3,  q2],  p1,
+      [q2,  q3,  q0, -q1],  p2,
+      [q3, -q2,  q1,  q0]]  p3]
+ある座標系のベクトルr_0をq_01によって座標系を回転させると，
+r_1 = q_01* r_1 q_01
+"""
 
 
 class Quaternion:
@@ -31,6 +42,7 @@ class Quaternion:
         ra = self.qcross(coq, self.qcross(r, q))
         return np.array([ra[1], ra[2], ra[3]])
 
+    # ベクトルrをクォータニオンq*で回す
     def rotation_w_r(self, r, q):
         r = self.quaternion(r)
         coq = self.cquat(q)

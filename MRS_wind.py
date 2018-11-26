@@ -172,7 +172,7 @@ alpha = np.empty(N)
 alpha[0] = 0
 cd = cd0
 # kappa = np.empty(N)
-kappa = 1.293 * S * cd[0] / 2.
+kappa = 1.293 * S * cd / 2.
 
 """回転に関する関数"""
 
@@ -436,7 +436,7 @@ plt.grid()
 plt.show()
 
 
-np.savetxt("98North.csv", pfall, delimiter=",")
+np.savetxt(f"{90-theta0}North.csv", pfall, delimiter=",")
 
 
 

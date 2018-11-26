@@ -179,7 +179,7 @@ def cone():
 # 重心x軸まわりの慣性モーメントhttps://www.orientalmotor.co.jp/tech/reference/sizing_motor03/
 # そこから円錐の先頭中心に平行軸の定理で移動(最後まとめて移動させたいから)
 def columnar():
-    I_colum = m_body * ((r0 ** 2 + ri ** 2) / 4. + (lc ** 2) / 3.) / 4.
+    I_colum = m_body * ((r0 ** 2 + ri ** 2) / 4. + (l0 ** 2) / 3.) / 4.
     dis = m_body * ((l0 / 2. + lc) ** 2 - (l0 / 2.) ** 2)
     return I_colum + dis
 
@@ -191,7 +191,7 @@ def inertia_e(time):
 
 # 最後平行軸の定理で全部ずらす(質量の合計はm(time))
 def inertia_xy(time):
-    return cone() + columnar() + inertia_e(time) + m(time) * rcg(time) * rcg(time)
+    return cone() + columnar() + inertia_e(time) + m(time) **2
 
 
 # 円筒のz軸重心まわりの慣性モーメント
@@ -344,6 +344,7 @@ for i in range(N - 1):
     a[i] = kv1
     vnorm.append(np.linalg.norm(v[i + 1]))
     anorm.append(np.linalg.norm(a[i + 1]))
+    print(Fd(v[i + 1], i, p[i+1, 2]))
 
     if p[i + 1, 2] > p[i, 2]:
         cd = cd0
