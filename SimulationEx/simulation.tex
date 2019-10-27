@@ -1,4 +1,4 @@
-\documentclass{jsarticle}
+\documentclass[a4paper]{jsarticle}
 \usepackage[dvipdfmx]{graphicx}
 \usepackage{url}
 \usepackage{amsmath,amssymb}
@@ -10,14 +10,12 @@
 \usepackage{listings}
 \usepackage{here}
 
-\title{飛行シミュレーション審査書添付資料}
-\author{RiSA -Ritsumeikan Space Association- \\　シミュレーション担当　高山竜一}
+\title{Model Rocket Simulator}
+\author{Takayamashi}
 \date{\today}
 
 \begin{document}
-
 \maketitle
-
 \section{定数定義}
 時間$t$の関数を$f(t)$のように記述する．
 
@@ -44,7 +42,7 @@ $r_{out}$ &[m]&ボディチューブ外径\\
 $C_D$ &&抗力係数\\
 $C_{N \alpha}$ &&法線力係数\\
 $r_p$ &[m]&パラシュート直径\\
-$r_p_{spill}$ &[m]&パラシュートスピルホール直径\\
+$r_p^{spill}$ &[m]&パラシュートスピルホール直径\\
 $C_p$ &&パラシュート抗力係数\\
 \end{tabular}
 
@@ -169,16 +167,16 @@ $\bm{v_{air}} = (V_{ax}(t), V_{ay}(t), V_{az}(t))$，$|\bm{v_{air}}|^2$は各要
 
 機体の慣性モーメント$I$について考える．
 このとき，ノーズコーンが円錐であると近似して，
-ノーズコーンの先端$xy$軸(円錐の円面に平行で垂直な2軸)周りの慣性モーメント$I_c_{xy} = $は，以下のように表せる
+ノーズコーンの先端$xy$軸(円錐の円面に平行で垂直な2軸)周りの慣性モーメント$I_{cxy} = $は，以下のように表せる
 \begin{equation}
-  I_c_{xy} = (3 m_{cone}r_{out}^2 / 4) / 20 + (3m_{cone}L_{cone}^2) / 5
+  I_{cxy} = (3 m_{cone}r_{out}^2 / 4) / 20 + (3m_{cone}L_{cone}^2) / 5
 \end{equation}
 
-また，ボディの，ノーズコーン先端から見た$xy$軸周りの慣性モーメント$I_b_{xy}$は，
-ボディチューブを円筒であると近似して，以下のようになる．ここで，$I_b_{xy}$は平行軸の定理より
+また，ボディの，ノーズコーン先端から見た$xy$軸周りの慣性モーメント$I_{bxy}$は，
+ボディチューブを円筒であると近似して，以下のようになる．ここで，$I_{bxy}$は平行軸の定理より
 ノーズコーン先端に移動させている．
 \begin{equation}
-  I_b_{xy} = m_{tube}((r_{out}^2 + r_{in}^2)/ 4 + L_{tube}^2/ 3) / 4
+  I_{bxy} = m_{tube}((r_{out}^2 + r_{in}^2)/ 4 + L_{tube}^2/ 3) / 4
   + m_{tube}((L_{tube} / 2 + L_{cone})^2 - (L_{tube} / 2)^2)
 \end{equation}
 
@@ -201,7 +199,7 @@ $\bm{v_{air}} = (V_{ax}(t), V_{ay}(t), V_{az}(t))$，$|\bm{v_{air}}|^2$は各要
 よって，ノーズコーン先端から重心までの距離がわかるので重心$xy$軸周りの
 慣性モーメント$I_{xy}$がわかる．
 \begin{equation}
-  I_{xy} = I_c_{xy} + I_b_{xy} + I_e + m(t)r_{CG}^2
+  I_{xy} = I_{cxy} + I_{bxy} + I_e + m(t)r_{CG}^2
 \end{equation}
 
 また，円錐，円筒の中心を通る$z$軸周りの慣性モーメント$I_z$は以下の通りである．
@@ -225,9 +223,9 @@ $\bm{v_{air}} = (V_{ax}(t), V_{ay}(t), V_{az}(t))$，$|\bm{v_{air}}|^2$は各要
 機軸座標上であれば，圧力中心位置は機軸に乗るので簡単にモーメントを計算できる．
 つまり，重心から圧力中心までの距離$r_{CP} = L_{CP} - r_{CG}(t)$となり，機軸座標を重心を
 原点としてとると，抗力が働く部分の位置ベクトル$\bm{r_D} = (0, 0, -r_{CP})$．
-そのため，$\bm{N}$は機軸座標系の抗力$\bm{F_D_E} = (Y, -N, -D)$を用いて以下のようになる．
+そのため，$\bm{N}$は機軸座標系の抗力$\bm{F_DE} = (Y, -N, -D)$を用いて以下のようになる．
 \begin{equation}
-  \bm{N} = \bm{r_D} \times \bm{F_D_E}
+  \bm{N} = \bm{r_D} \times \bm{F_DE}
 \end{equation}
 
 
@@ -236,23 +234,23 @@ $\bm{v_{air}} = (V_{ax}(t), V_{ay}(t), V_{az}(t))$，$|\bm{v_{air}}|^2$は各要
 点でパラシュートが開傘するようにする．また，パラシュートの表現として，抗力$D$に対して以下のように
 変化させる．
 \begin{equation}
-  D(t) &= \frac{1}{2} \rho S_p C_p v_{air}^2
+  D(t) = \frac{1}{2} \rho S_p C_p v_{air}^2
 \end{equation}
 $N, Y$についてはパラシュート開傘前後で同じ式を用いる．
 
 
 コード全文はGithub(https://github.com/Takayamashi/ModelRocketSimulator)のMRS.pyに示している．
 
-\begin{thebibliography}{9}
-  \bibitem{bib1} スピンを伴うロケットの運動を計算するプログラム \\
+\begin{thebibliography}{99}
+  \bibitem{bib1} スピンを伴うロケットの運動を計算するプログラム
   \url{https://repository.exst.jaxa.jp/dspace/bitstream/a-is/25045/1/naltm00145.pdf}
-  \bibitem{bib2} クォータニオン計算便利ノート \\
+  \bibitem{bib2} クォータニオン計算便利ノート
   \url{http://www.mss.co.jp/technology/report/pdf/18-07.pdf}
-  \bibitem{bib3} Matlabで計算するロケットフライトシミュレータ (稲川貴大) \\
+  \bibitem{bib3} Matlabで計算するロケットフライトシミュレータ (稲川貴大)
   \url{https://github.com/ina111/MatRockSim}
-  \bibitem{bib4} OpenRocket technical documentation \\
+  \bibitem{bib4} OpenRocket technical documentation
   \url{http://openrocket.sourceforge.net/techdoc.pdf}
-  \bibitem{bib5} ModelRocketSimulator \\
+  \bibitem{bib5} ModelRocketSimulator
   \url{https://github.com/Jirouken/ModelRocketSimulator}
 \end{thebibliography}
 
