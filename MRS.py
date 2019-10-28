@@ -120,7 +120,7 @@ def q0_360(theta):
 
 
 """初期条件"""
-theta0 = 2.
+theta0 = 0.
 qarray = [q0_0(theta0), q0_45(theta0), q0_90(theta0), q0_135(theta0), q0_180(theta0), q0_225(theta0),
           q0_270(theta0), q0_315(theta0), q0_360(theta0)]
 
@@ -268,9 +268,9 @@ def omegacross(time, a):
 # θの二回微分=Frotの形にするために定義
 def Frot(time, qr, vb, a, h):
     Frot_1 = np.dot(Iinv(time), M(time, vb, qr, a, h))
-    Frot_2 = - np.dot(Iinv(time), Idomega(time, a))
-    Frot_3 = - np.dot(Iinv(time), omegacross(time, a))
-    return Frot_1 + Frot_2 + Frot_3
+    Frot_2 = np.dot(Iinv(time), Idomega(time, a))
+    Frot_3 = np.dot(Iinv(time), omegacross(time, a))
+    return Frot_1 - Frot_2 - Frot_3
 
 
 """並進運動に関する関数"""
@@ -287,7 +287,7 @@ def Fs(time, qr, vb, a, h):
 
 
 # 迎角
-def angle(vb, qr):
+def attack_angle(vb, qr):
     Va = qua.rotation(vb, qr)
     Vaz = Va[2]
     Vax = Va[0]
@@ -329,17 +329,17 @@ for i in range(N - 1):
     omega[i + 1] = runge_kutta(omega[i], ko1, ko2, ko3, ko4)
     v[i + 1] = runge_kutta(v[i], kv1, kv2, kv3, kv4)
     p[i + 1] = runge_kutta(p[i], kz1, kz2, kz3, kz4)
-    alpha[i + 1] = angle(v[i + 1], q) * 180. / np.pi
+    alpha[i + 1] = attack_angle(v[i + 1], q) * 180. / np.pi
     a[i] = kv1
     vnorm.append(np.linalg.norm(v[i + 1]))
     anorm.append(np.linalg.norm(a[i + 1]))
     print(omega[i+1])
 
     if p[i + 1, 2] > p[i, 2]:
-        cd = np.array([cd_0 * angle(v[i+1], q), cd_0 * angle(v[i+1], q), cd_0])
+        cd = np.array([cd_0 * attack_angle(v[i+1], q), cd_0 * attack_angle(v[i+1], q), cd_0])
 
         if p[i + 1, 2] < launcher:
-            q = q0_0(0.)
+            q = q0_0(theta0)
             # ランチャー上を移動
             kappa = 1.293 * S * cd / 2.
             # print(kappa)
@@ -354,24 +354,15 @@ for i in range(N - 1):
     else:
         # クォータニオンを求める
         q += qua.qua_dot(omega[i], q) * dt
-        # パラシュートを開く(抗力係数を)
-        cp = np.array([cd_0 * angle(v[i+1], q), cd_0 * angle(v[i+1], q), 0.65])
+        # パラシュートを開く(抗力係数を変化)
+        cp = np.array([cd_0 * attack_angle(v[i+1], q), cd_0 * attack_angle(v[i+1], q), 0.65])
         kappa = 1.293 * Sp * cp / 2.
 
-    if p[i + 1, 2] < 0:
+    if p[i + 1, 2] < -1.0:
         count = i + 1
         break
 
 pfall2d = pfall[:, [0, 1]]
-
-print(t[count])
-print(np.argmax(p[0:count, 2]))
-print(t[np.argmax(p[0:count, 2])])
-print(v[count, 2])
-print(max(vnorm))
-print(max(p[0:count, 2]))
-print(max(launcclearv))
-print(pfall2d)
 plt.title("motion")
 plt.xlabel("t[s]")
 plt.ylim(0, max(p[0:count, 2] * 1.05))
