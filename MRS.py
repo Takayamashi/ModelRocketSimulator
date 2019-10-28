@@ -10,7 +10,7 @@ from mpl_toolkits.mplot3d import Axes3D
 # 機体のスペックシートを読み込む
 spec = pd.read_csv("spec.csv")
 # 機体の推力シートを読む
-thrust = np.loadtxt("I205.txt")
+thrust = np.loadtxt("G75.txt")
 qua = quaternion.Quaternion()
 
 T = 60.
@@ -358,7 +358,7 @@ for i in range(N - 1):
         cp = np.array([cd_0 * angle(v[i+1], q), cd_0 * angle(v[i+1], q), 0.65])
         kappa = 1.293 * Sp * cp / 2.
 
-    if p[i + 1, 2] < 0:
+    if p[i + 1, 2] < -1.0:
         count = i + 1
         break
 
