@@ -10,7 +10,7 @@ from mpl_toolkits.mplot3d import Axes3D
 # 機体のスペックシートを読み込む
 spec = pd.read_csv("spec.csv")
 # 機体の推力シートを読む
-thrust = np.loadtxt("I205.txt")
+thrust = np.loadtxt("G75.txt")
 qua = quaternion.Quaternion()
 
 T = 60.
